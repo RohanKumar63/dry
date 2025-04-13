@@ -3,217 +3,222 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductGrid from '@/components/products/ProductGrid'
-import Image from 'next/image'
 
-// Create a comprehensive product list using all 19 images
 const allProducts = [
   {
-    id: '1',
-    name: 'Dried Amla',
-    price: 12.99,
-    image: '/products/1.jpg',
-    category: 'Fruits',
-    rating: 4.8,
-    reviews: 124,
-    stock: 25,
-    bestseller: true
+    "id": "1",
+    "name": "Dried Amla",
+    "price": 12.99,
+    "image": "/products/1.jpg",
+    "category": "Fruits",
+    "rating": 4.8,
+    "reviews": 124,
+    "stock": 25,
+    "bestseller": true
   },
   {
-    id: '2',
-    name: 'Organic Wheatgrass',
-    price: 14.99,
-    image: '/products/2.jpg',
-    category: 'Vegetables',
-    rating: 4.7,
-    reviews: 89,
-    stock: 18,
-    bestseller: false
+    "id": "2",
+    "name": "Organic Wheatgrass",
+    "price": 14.99,
+    "image": "/products/2.jpg",
+    "category": "Superfoods",
+    "rating": 4.7,
+    "reviews": 98,
+    "stock": 30,
+    "bestseller": true
   },
   {
-    id: '3',
-    name: 'Red Dehydated Onion Flakes',
-    price: 9.99,
-    image: '/products/3.jpg',
-    category: 'Snacks',
-    rating: 4.9,
-    reviews: 56,
-    stock: 32,
-    bestseller: true
+    "id": "3",
+    "name": "Red Dehydrated Onion Flakes",
+    "price": 9.49,
+    "image": "/products/3.jpg",
+    "category": "Spices & Herbs",
+    "rating": 4.6,
+    "reviews": 87,
+    "stock": 40,
+    "bestseller": false
   },
   {
-    id: '4',
-    name: 'Dried Amla Granules',
-    price: 17.99,
-    image: '/products/4.jpg',
-    category: 'Berries',
-    rating: 4.6,
-    reviews: 72,
-    stock: 15,
-    bestseller: false
+    "id": "4",
+    "name": "Dried Amla Granules",
+    "price": 11.49,
+    "image": "/products/4.jpg",
+    "category": "Fruits",
+    "rating": 4.8,
+    "reviews": 110,
+    "stock": 35,
+    "bestseller": true
   },
   {
-    id: '5',
-    name: 'Dried Broccoli(Green Gobhi)',
-    price: 15.99,
-    image: '/products/5.jpg',
-    category: 'Exotics',
-    rating: 4.5,
-    reviews: 43,
-    stock: 20,
-    bestseller: false
+    "id": "5",
+    "name": "Dried Broccoli (Green Gobhi)",
+    "price": 13.99,
+    "image": "/products/5.jpg",
+    "category": "Vegetables",
+    "rating": 4.5,
+    "reviews": 76,
+    "stock": 28,
+    "bestseller": false
   },
   {
-    id: '6',
-    name: 'Dried Kasuri Methi(Fenugreek)',
-    price: 18.99,
-    image: '/products/6.jpg',
-    category: 'Berries',
-    rating: 4.9,
-    reviews: 32,
-    stock: 12,
-    new: true
+    "id": "6",
+    "name": "Dried Kasuri Methi (Fenugreek)",
+    "price": 7.99,
+    "image": "/products/6.jpg",
+    "category": "Spices & Herbs",
+    "rating": 4.7,
+    "reviews": 95,
+    "stock": 50,
+    "bestseller": true
   },
   {
-    id: '7',
-    name: 'Dried Dill Leaves(Soya Leaves)',
-    price: 8.99,
-    image: '/products/7.jpg',
-    category: 'Snacks',
-    rating: 4.8,
-    reviews: 17,
-    stock: 40,
-    new: true
+    "id": "7",
+    "name": "Dried Dill Leaves (Soya Leaves)",
+    "price": 6.99,
+    "image": "/products/7.jpg",
+    "category": "Spices & Herbs",
+    "rating": 4.6,
+    "reviews": 81,
+    "stock": 40,
+    "bestseller": false
   },
   {
-    id: '8',
-    name: 'Dehydrated Spinach(Palak Leaf)',
-    price: 12.99,
-    image: '/products/8.jpg',
-    category: 'Exotics',
-    rating: 4.7,
-    reviews: 23,
-    stock: 22,
-    new: true
+    "id": "8",
+    "name": "Dehydrated Spinach (Palak Leaves)",
+    "price": 5.49,
+    "image": "/products/8.jpg",
+    "category": "Vegetables",
+    "rating": 4.7,
+    "reviews": 96,
+    "stock": 45,
+    "bestseller": false
   },
   {
-    id: '9',
-    name: 'Dehydrated Bittergourd(Karela Flakes)',
-    price: 9.99,
-    image: '/products/9.jpg',
-    category: 'Fruits',
-    rating: 4.9,
-    reviews: 28,
-    stock: 35,
-    new: true
+    "id": "9",
+    "name": "Dehydrated Bittergourd (Karela Flakes)",
+    "price": 4.99,
+    "image": "/products/9.jpg",
+    "category": "Vegetables",
+    "rating": 4.5,
+    "reviews": 78,
+    "stock": 60,
+    "bestseller": false
   },
   {
-    id: '10',
-    name: 'Dehydrated Carrot(Cubes/Flakes)',
-    price: 11.99,
-    image: '/products/10.jpg',
-    category: 'Vegetables',
-    rating: 5.0,
-    reviews: 12,
-    stock: 18,
-    new: true
+    "id": "10",
+    "name": "Dehydrated Carrot (Cubes/Flakes)",
+    "price": 3.99,
+    "image": "/products/10.jpg",
+    "category": "Vegetables",
+    "rating": 4.8,
+    "reviews": 112,
+    "stock": 85,
+    "bestseller": true
   },
   {
-    id: '11',
-    name: 'Dehydrated Ginger Flakes',
-    price: 15.99,
-    image: '/products/11.jpg',
-    category: 'Snacks',
-    rating: 4.6,
-    reviews: 19,
-    stock: 28,
-    new: true
+    "id": "11",
+    "name": "Dehydrated Ginger Flakes",
+    "price": 6.49,
+    "image": "/products/11.jpg",
+    "category": "Spices & Herbs",
+    "rating": 4.9,
+    "reviews": 145,
+    "stock": 50,
+    "bestseller": true
   },
   {
-    id: '12',
-    name: 'Dehydrated Raw Banana Flakes',
-    price: 7.99,
-    image: '/products/12.jpg',
-    category: 'Fruits',
-    rating: 4.5,
-    reviews: 37,
-    stock: 45
+    "id": "12",
+    "name": "Dehydrated Raw Banana Flakes",
+    "price": 4.29,
+    "image": "/products/12.jpg",
+    "category": "Fruits",
+    "rating": 4.6,
+    "reviews": 88,
+    "stock": 70,
+    "bestseller": false
   },
   {
-    id: '13',
-    name: 'Dehydrated Beet Root Flakes',
-    price: 19.99,
-    image: '/products/13.jpg',
-    category: 'Berries',
-    rating: 4.9,
-    reviews: 42,
-    stock: 15
+    "id": "13",
+    "name": "Dehydrated Beet Root Flakes",
+    "price": 19.99,
+    "image": "/products/13.jpg",
+    "category": "Vegetables",
+    "rating": 4.9,
+    "reviews": 42,
+    "stock": 15,
+    "bestseller": false
   },
   {
-    id: '14',
-    name: 'Dehydrated Green Coriander Leaf',
-    price: 13.99,
-    image: '/products/14.jpg',
-    category: 'Nuts',
-    rating: 4.7,
-    reviews: 31,
-    stock: 25
+    "id": "14",
+    "name": "Dehydrated Green Coriander Leaf",
+    "price": 3.99,
+    "image": "/products/14.jpg",
+    "category": "Herbs & Spices",
+    "rating": 4.5,
+    "reviews": 92,
+    "stock": 55,
+    "bestseller": false
   },
   {
-    id: '15',
-    name: 'Dry Rose Petals',
-    price: 16.99,
-    image: '/products/15.jpg',
-    category: 'Exotics',
-    rating: 4.8,
-    reviews: 18,
-    stock: 10
+    "id": "15",
+    "name": "Dried Rose Petals",
+    "price": 5.99,
+    "image": "/products/15.jpg",
+    "category": "Herbs & Floral",
+    "rating": 4.8,
+    "reviews": 120,
+    "stock": 35,
+    "bestseller": true
   },
   {
-    id: '16',
-    name: 'Dehydrated Lemon Leaf',
-    price: 14.99,
-    image: '/products/16.jpg',
-    category: 'Vegetables',
-    rating: 4.6,
-    reviews: 24,
-    stock: 30
+    "id": "16",
+    "name": "Dehydrated Lemon Leaf",
+    "price": 4.49,
+    "image": "/products/16.jpg",
+    "category": "Herbs & Tea",
+    "rating": 4.4,
+    "reviews": 68,
+    "stock": 42,
+    "bestseller": false
   },
   {
-    id: '17',
-    name: 'Dried Fresh Raw Root Turmeric(Kacchi Haldi)',
-    price: 13.99,
-    image: '/products/17.jpg',
-    category: 'Berries',
-    rating: 4.7,
-    reviews: 29,
-    stock: 22
+    "id": "17",
+    "name": "Dried Fresh Raw Root Turmeric (Kacchi Haldi)",
+    "price": 8.99,
+    "image": "/products/17.jpg",
+    "category": "Spices & Herbs",
+    "rating": 4.9,
+    "reviews": 150,
+    "stock": 30,
+    "bestseller": true
   },
   {
-    id: '18',
-    name: 'Dehydrated Green Chilli Flakes',
-    price: 15.49,
-    image: '/products/18.jpg',
-    category: 'Exotics',
-    rating: 4.6,
-    reviews: 15,
-    stock: 18
+    "id": "18",
+    "name": "Dehydrated Green Chilli Flakes",
+    "price": 4.99,
+    "image": "/products/18.jpg",
+    "category": "Spices & Seasonings",
+    "rating": 4.6,
+    "reviews": 105,
+    "stock": 60,
+    "bestseller": true
   },
   {
-    id: '19',
-    name: 'Nutrient-Dense Veggie Mix',
-    price: 12.49,
-    image: '/products/19.jpg',
-    category: 'Vegetables',
-    rating: 4.8,
-    reviews: 33,
-    stock: 24
+    "id": "19",
+    "name": "Nutrient-Dense Veggie Mix",
+    "price": 12.49,
+    "image": "/products/19.jpg",
+    "category": "Vegetables",
+    "rating": 4.8,
+    "reviews": 33,
+    "stock": 24,
+    "bestseller": false
   }
 ]
 
-const categories = ['All', 'Fruits', 'Vegetables', 'Snacks', 'Berries', 'Exotics', 'Nuts']
+const categories = ['All', 'Fruits', 'Vegetables', 'Spices & Herbs', 'Superfoods', 'Herbs & Floral', 'Herbs & Tea', 'Spices & Seasonings']
 const sortOptions = [
   { value: 'featured', label: 'Featured' },
-  { value: 'newest', label: 'Newest' },
   { value: 'price-low', label: 'Price: Low to High' },
   { value: 'price-high', label: 'Price: High to Low' },
   { value: 'rating', label: 'Highest Rated' }
@@ -235,23 +240,23 @@ export default function ProductsPage() {
   }, [categoryParam])
   
   const filteredProducts = allProducts.filter(product => {
-    if (activeCategory !== 'All' && product.category !== activeCategory) return false
-    if (product.price < priceRange[0] || product.price > priceRange[1]) return false
-    return true
+    const categoryMatch = activeCategory === 'All' || product.category === activeCategory
+    const priceMatch = product.price >= priceRange[0] && product.price <= priceRange[1]
+    return categoryMatch && priceMatch
   })
   
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
-      case 'newest':
-        return a.new ? -1 : b.new ? 1 : 0
       case 'price-low':
         return a.price - b.price
       case 'price-high':
         return b.price - a.price
       case 'rating':
         return b.rating - a.rating
-      default:
-        return a.bestseller ? -1 : b.bestseller ? 1 : 0
+      default: // 'featured'
+        if (a.bestseller && !b.bestseller) return -1
+        if (!a.bestseller && b.bestseller) return 1
+        return b.rating - a.rating
     }
   })
   
@@ -304,33 +309,6 @@ export default function ProductsPage() {
                   onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
                   className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
                 />
-              </div>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-3">Product Type</h3>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="rounded text-amber-600 focus:ring-amber-500 h-4 w-4"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">New Arrivals</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="rounded text-amber-600 focus:ring-amber-500 h-4 w-4"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">Best Sellers</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input 
-                      type="checkbox" 
-                      className="rounded text-amber-600 focus:ring-amber-500 h-4 w-4"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">On Sale</span>
-                  </label>
-                </div>
               </div>
               
               <button className="w-full py-2 bg-gray-900 hover:bg-gray-800 text-white rounded-md transition-colors text-sm">

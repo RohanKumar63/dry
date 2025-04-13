@@ -8,7 +8,7 @@ import { useCart } from '@/context/CartContext'
 import { toast } from 'react-hot-toast'
 
 export default function CartPage() {
-  const { items, removeFromCart, updateQuantity, clearCart, cartTotal } = useCart();
+  const { items = [], removeFromCart = () => {}, updateQuantity = () => {}, clearCart = () => {}, cartTotal = 0 } = useCart() || {};
   const [isProcessing, setIsProcessing] = useState(false);
   
   // Define styles
@@ -62,7 +62,7 @@ export default function CartPage() {
             </div>
             <h2 className="text-2xl font-medium mb-4">Your cart is empty</h2>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              Looks like you haven't added any products to your cart yet. Explore our products and find something you'll love!
+              Looks like you haven&apos;t added any products to your cart yet. Explore our products and find something you&apos;ll love!
             </p>
             <Link 
               href="/products" 
@@ -259,7 +259,7 @@ export default function CartPage() {
                 </button>
                 
                 <div className="text-sm text-gray-500 text-center">
-                  <p>We'll send your order details via WhatsApp for confirmation and payment processing.</p>
+                  <p>We&apos;ll send your order details via WhatsApp for confirmation and payment processing.</p>
                 </div>
               </div>
             </div>

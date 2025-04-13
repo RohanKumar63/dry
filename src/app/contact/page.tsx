@@ -1,8 +1,10 @@
+/* eslint-disable react/no-unescaped-entities */
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
+// Commented out unused imports
+// import Image from 'next/image'
+// import Link from 'next/link'
 
 export default function ContactPage() {
   const [formState, setFormState] = useState({
@@ -51,7 +53,7 @@ export default function ContactPage() {
         <header className="mb-12 text-center">
           <h1 className="text-3xl md:text-5xl font-playfair mb-4">Contact Us</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Have questions about our products or want to place a bulk order? We'd love to hear from you. Reach out using any of the methods below.
+            Have questions about our products or want to place a bulk order? We&apos;d love to hear from you. Reach out using any of the methods below.
           </p>
         </header>
         
@@ -293,6 +295,7 @@ export default function ContactPage() {
             loading="lazy"
             aria-hidden="false"
             tabIndex={0}
+            referrerPolicy="no-referrer-when-downgrade"
           ></iframe>
         </div>
         
@@ -320,7 +323,7 @@ export default function ContactPage() {
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
               <h3 className="text-lg font-medium text-gray-900 mb-2">Are your products organic?</h3>
               <p className="text-gray-600">
-                Many of our products are certified organic. Each product description specifies whether it's organic or conventionally grown.
+                Many of our products are certified organic. Each product description specifies whether it&apos;s organic or conventionally grown.
               </p>
             </div>
             
@@ -331,6 +334,10 @@ export default function ContactPage() {
               </p>
             </div>
           </div>
+        </div>
+        
+        <div className="text-sm text-gray-500 text-center">
+          <p>We&apos;ll send your order details via WhatsApp for confirmation and payment processing.</p>
         </div>
       </div>
     </div>

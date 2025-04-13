@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
+// Commented out unused import
+// import Image from 'next/image'
 import Link from 'next/link'
 import ProductCard from '@/components/products/ProductCard'
 

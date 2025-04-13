@@ -1,3 +1,5 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -32,10 +34,10 @@ export default function AboutPage() {
           <div>
             <h2 className="text-2xl md:text-3xl font-playfair mb-4">Our Mission</h2>
             <p className="text-gray-700 mb-4">
-              At TheNutriDry, we believe that healthy eating shouldn't be complicated or time-consuming. Our mission is to provide premium quality dehydrated fruits and vegetables that retain their natural nutrients and flavors while offering unmatched convenience.
+              At TheNutriDry, we believe that healthy eating shouldn&apos;t be complicated or time-consuming. Our mission is to provide premium quality dehydrated fruits and vegetables that retain their natural nutrients and flavors while offering unmatched convenience.
             </p>
             <p className="text-gray-700">
-              We're committed to sustainable food practices, reducing food waste, and making nutritious options accessible to everyone. Each product is carefully crafted to ensure you get the best of nature in every bite, without any artificial additives or preservatives.
+              We&apos;re committed to sustainable food practices, reducing food waste, and making nutritious options accessible to everyone. Each product is carefully crafted to ensure you get the best of nature in every bite, without any artificial additives or preservatives.
             </p>
           </div>
           
@@ -124,10 +126,10 @@ export default function AboutPage() {
             <div>
               <h2 className="text-2xl md:text-3xl font-playfair mb-4">Our Commitment to Sustainability</h2>
               <p className="text-gray-700 mb-4">
-                At TheNutriDry, sustainability isn't just a buzzword—it's a core principle that guides everything we do. By extending the shelf life of seasonal produce through dehydration, we help reduce food waste throughout the supply chain.
+                At TheNutriDry, sustainability isn&apos;t just a buzzword—it&apos;s a core principle that guides everything we do. By extending the shelf life of seasonal produce through dehydration, we help reduce food waste throughout the supply chain.
               </p>
               <p className="text-gray-700 mb-4">
-                Our packaging is designed with the environment in mind, using recyclable and biodegradable materials wherever possible. We're constantly researching new ways to minimize our ecological footprint.
+                Our packaging is designed with the environment in mind, using recyclable and biodegradable materials wherever possible. We&apos;re constantly researching new ways to minimize our ecological footprint.
               </p>
               <p className="text-gray-700">
                 We partner with local farmers who share our commitment to sustainable agricultural practices, supporting communities while ensuring the highest quality ingredients for our products.
@@ -149,7 +151,7 @@ export default function AboutPage() {
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-playfair mb-4">Meet Our Team</h2>
             <p className="text-gray-700 max-w-2xl mx-auto">
-              The passionate individuals behind TheNutriDry's vision and products.
+              The passionate individuals behind TheNutriDry&apos;s vision and products.
             </p>
           </div>
           

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductGrid from '@/components/products/ProductGrid'
+import Link from 'next/link'
 
 // Using the same product data as the products page
 const allProducts = [
@@ -263,7 +264,7 @@ export default function SearchPage() {
           <h1 className="text-3xl md:text-4xl font-playfair mb-2">Search Results</h1>
           {query ? (
             <p className="text-gray-600">
-              {searchResults.length} results for "{query}"
+              {searchResults.length} results for &ldquo;{query}&rdquo;
             </p>
           ) : (
             <p className="text-gray-600">
@@ -302,24 +303,24 @@ export default function SearchPage() {
             </svg>
             <h2 className="mt-4 text-2xl font-medium text-gray-900">No results found</h2>
             <p className="mt-2 text-gray-600 max-w-md mx-auto mb-6">
-              We couldn't find any products matching "{query}". Try different keywords or browse our categories.
+              We couldn&apos;t find any products matching &ldquo;{query}&rdquo;. Try different keywords or browse our categories.
             </p>
             
             <div className="mt-6">
               <h3 className="text-lg font-medium text-gray-900 mb-3">Browse Categories</h3>
               <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
                 {categories.map(category => (
-                  <a 
+                  <Link 
                     key={category}
                     href={`/products?category=${category}`} 
                     className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors"
                   >
                     {category}
-                  </a>
+                  </Link>
                 ))}
-                <a href="/products" className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-colors">
+                <Link href="/products" className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-colors">
                   All Products
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -336,21 +337,21 @@ export default function SearchPage() {
             <div className="mt-6">
               <h3 className="text-lg font-medium text-gray-900 mb-3">Popular Searches</h3>
               <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
-                <a href="/search?q=amla" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                <Link href="/search?q=amla" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
                   Amla
-                </a>
-                <a href="/search?q=leaf" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                </Link>
+                <Link href="/search?q=leaf" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
                   Leaf
-                </a>
-                <a href="/search?q=flakes" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                </Link>
+                <Link href="/search?q=flakes" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
                   Flakes
-                </a>
-                <a href="/search?q=dried" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                </Link>
+                <Link href="/search?q=dried" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
                   Dried
-                </a>
-                <a href="/search?q=dehydrated" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                </Link>
+                <Link href="/search?q=dehydrated" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
                   Dehydrated
-                </a>
+                </Link>
               </div>
             </div>
           </div>

@@ -35,7 +35,6 @@ export default function HeroSection() {
 
   // Define styles
   const primaryColor = '#2b9348'
-  const primaryDark = '#1e6b33'
   
   // Function to handle manual navigation - fixed TypeScript error by adding type
   const goToSlide = (index: number) => {
@@ -71,6 +70,7 @@ export default function HeroSection() {
               fill
               priority
               className="object-cover"
+              sizes="100vw"
             />
           </div>
         </div>
