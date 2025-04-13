@@ -20,24 +20,24 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <CategoryCard 
-              title="Audio" 
-              image="/products/headphones.jpg" 
-              href="/products?category=audio"
+              title="Dehydrated Vegetables" 
+              image="/products/1pro.jpg" 
+              href="/products"
             />
             <CategoryCard 
-              title="Wearables" 
-              image="/products/smartwatch.jpg" 
-              href="/products?category=wearables"
+              title="Dehydrated Powders" 
+              image="/products/2pro.jpg" 
+              href="/products"
             />
             <CategoryCard 
-              title="Apparel" 
-              image="/products/jacket.jpg" 
-              href="/products?category=apparel"
+              title="Dehydrated Flakes" 
+              image="/products/3pro.jpg" 
+              href="/products"
             />
             <CategoryCard 
-              title="Home" 
-              image="/products/coffeemaker.jpg" 
-              href="/products?category=home"
+              title="Dehydated Fruits" 
+              image="/products/4pro.jpg" 
+              href="/products"
             />
           </div>
         </div>
