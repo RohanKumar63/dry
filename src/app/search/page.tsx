@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductGrid from '@/components/products/ProductGrid'
 import Link from 'next/link'
@@ -225,7 +225,8 @@ const allProducts = [
   }
 ]
 
-export default function SearchPage() {
+// Create a client component that uses useSearchParams
+function SearchContent() {
   const searchParams = useSearchParams()
   const query = searchParams.get('q') || ''
   const [sortBy, setSortBy] = useState('featured')
@@ -242,7 +243,6 @@ export default function SearchPage() {
   
   useEffect(() => {
     if (query) {
-      // Remove the reference to product.description which doesn't exist on all products
       const results = allProducts.filter(product => 
         product.name.toLowerCase().includes(query.toLowerCase()) ||
         product.category.toLowerCase().includes(query.toLowerCase())
@@ -272,104 +272,115 @@ export default function SearchPage() {
   const categories = ['Fruits', 'Vegetables', 'Snacks', 'Berries', 'Exotics', 'Nuts']
   
   return (
+    <>
+      <header className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-playfair mb-2">Search Results</h1>
+        {query ? (
+          <p className="text-gray-600">
+            {searchResults.length} results for &ldquo;{query}&rdquo;
+          </p>
+        ) : (
+          <p className="text-gray-600">
+            Please enter a search term to find products
+          </p>
+        )}
+      </header>
+      
+      {searchResults.length > 0 ? (
+        <>
+          <div className="flex justify-between items-center mb-6">
+            <p className="text-sm text-gray-600">Showing {sortedResults.length} products</p>
+            
+            <div className="flex items-center">
+              <span className="text-sm text-gray-600 mr-2">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="py-2 px-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-amber-600 focus:border-amber-600"
+              >
+                {sortOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          
+          <ProductGrid products={sortedResults} />
+        </>
+      ) : query ? (
+        <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <h2 className="mt-4 text-2xl font-medium text-gray-900">No results found</h2>
+          <p className="mt-2 text-gray-600 max-w-md mx-auto mb-6">
+            We couldn&apos;t find any products matching &ldquo;{query}&rdquo;. Try different keywords or browse our categories.
+          </p>
+          
+          <div className="mt-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-3">Browse Categories</h3>
+            <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
+              {categories.map(category => (
+                <Link 
+                  key={category}
+                  href={`/products?category=${category}`} 
+                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors"
+                >
+                  {category}
+                </Link>
+              ))}
+              <Link href="/products" className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-colors">
+                All Products
+              </Link>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <h2 className="mt-4 text-xl font-medium text-gray-900">Search for products</h2>
+          <p className="mt-2 text-gray-600 max-w-md mx-auto">
+            Enter a search term in the search box above to find products from our collection of premium dehydrated fruits and vegetables.
+          </p>
+          
+          <div className="mt-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-3">Popular Searches</h3>
+            <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
+              <Link href="/search?q=amla" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                Amla
+              </Link>
+              <Link href="/search?q=leaf" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                Leaf
+              </Link>
+              <Link href="/search?q=flakes" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                Flakes
+              </Link>
+              <Link href="/search?q=dried" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                Dried
+              </Link>
+              <Link href="/search?q=dehydrated" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
+                Dehydrated
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
+// Main page component with Suspense boundary
+export default function SearchPage() {
+  return (
     <div className="pt-24 pb-16">
       <div className="container mx-auto px-4 md:px-6">
-        <header className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-playfair mb-2">Search Results</h1>
-          {query ? (
-            <p className="text-gray-600">
-              {searchResults.length} results for &ldquo;{query}&rdquo;
-            </p>
-          ) : (
-            <p className="text-gray-600">
-              Please enter a search term to find products
-            </p>
-          )}
-        </header>
-        
-        {searchResults.length > 0 ? (
-          <>
-            <div className="flex justify-between items-center mb-6">
-              <p className="text-sm text-gray-600">Showing {sortedResults.length} products</p>
-              
-              <div className="flex items-center">
-                <span className="text-sm text-gray-600 mr-2">Sort by:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="py-2 px-3 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-amber-600 focus:border-amber-600"
-                >
-                  {sortOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            
-            <ProductGrid products={sortedResults} />
-          </>
-        ) : query ? (
-          <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <h2 className="mt-4 text-2xl font-medium text-gray-900">No results found</h2>
-            <p className="mt-2 text-gray-600 max-w-md mx-auto mb-6">
-              We couldn&apos;t find any products matching &ldquo;{query}&rdquo;. Try different keywords or browse our categories.
-            </p>
-            
-            <div className="mt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-3">Browse Categories</h3>
-              <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
-                {categories.map(category => (
-                  <Link 
-                    key={category}
-                    href={`/products?category=${category}`} 
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors"
-                  >
-                    {category}
-                  </Link>
-                ))}
-                <Link href="/products" className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-colors">
-                  All Products
-                </Link>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-white rounded-lg shadow-sm border border-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <h2 className="mt-4 text-xl font-medium text-gray-900">Search for products</h2>
-            <p className="mt-2 text-gray-600 max-w-md mx-auto">
-              Enter a search term in the search box above to find products from our collection of premium dehydrated fruits and vegetables.
-            </p>
-            
-            <div className="mt-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-3">Popular Searches</h3>
-              <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
-                <Link href="/search?q=amla" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
-                  Amla
-                </Link>
-                <Link href="/search?q=leaf" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
-                  Leaf
-                </Link>
-                <Link href="/search?q=flakes" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
-                  Flakes
-                </Link>
-                <Link href="/search?q=dried" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
-                  Dried
-                </Link>
-                <Link href="/search?q=dehydrated" className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-800 transition-colors">
-                  Dehydrated
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
+        <Suspense fallback={<div className="flex justify-center py-10">Loading search results...</div>}>
+          <SearchContent />
+        </Suspense>
       </div>
     </div>
   )

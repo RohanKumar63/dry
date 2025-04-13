@@ -2,7 +2,21 @@
 
 import { useState } from 'react'
 import ProductGrid from '@/components/products/ProductGrid'
-import { Product } from '@/types/product'
+
+// Define the Product type directly in this file
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  rating: number;
+  reviews: number;
+  stock: number;
+  new?: boolean;
+  bestseller?: boolean;
+  description?: string;
+}
 
 // Filter the products that are marked as new arrivals
 const newArrivalsProducts: Product[] = [
