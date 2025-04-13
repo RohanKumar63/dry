@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import ProductGrid from '@/components/products/ProductGrid'
+import { Product } from '@/types/product'
 
 // Filter the products that are marked as new arrivals
-const newArrivalsProducts = [
+const newArrivalsProducts: Product[] = [
   {
     id: '6',
     name: 'Superfood Berry Blend',
@@ -13,7 +14,9 @@ const newArrivalsProducts = [
     category: 'Berries',
     rating: 4.9,
     reviews: 32,
-    new: true
+    stock: 20,
+    new: true,
+    description: 'A delicious blend of superfoods and berries.'
   },
   {
     id: '7',
@@ -23,7 +26,9 @@ const newArrivalsProducts = [
     category: 'Snacks',
     rating: 4.8,
     reviews: 17,
-    new: true
+    stock: 25,
+    new: true,
+    description: 'Crunchy vegetable chips made from premium vegetables.'
   },
   {
     id: '8',
@@ -33,7 +38,9 @@ const newArrivalsProducts = [
     category: 'Exotics',
     rating: 4.7,
     reviews: 23,
-    new: true
+    stock: 30,
+    new: true,
+    description: 'A mix of tropical fruits for a burst of flavor.'
   },
   {
     id: '9',
@@ -43,7 +50,9 @@ const newArrivalsProducts = [
     category: 'Fruits',
     rating: 4.9,
     reviews: 8,
-    new: true
+    stock: 15,
+    new: true,
+    description: 'Dried mango for a sweet and healthy snack.'
   },
   {
     id: '10',
@@ -53,7 +62,9 @@ const newArrivalsProducts = [
     category: 'Vegetables',
     rating: 5.0,
     reviews: 12,
-    new: true
+    stock: 18,
+    new: true,
+    description: 'Organic root vegetables for a nutritious meal.'
   },
   {
     id: '11',
@@ -63,7 +74,9 @@ const newArrivalsProducts = [
     category: 'Snacks',
     rating: 4.6,
     reviews: 19,
-    new: true
+    stock: 22,
+    new: true,
+    description: 'A healthy snack pack with a variety of nutritious ingredients.'
   }
 ]
 

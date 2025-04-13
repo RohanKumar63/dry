@@ -5,6 +5,21 @@ import { useSearchParams } from 'next/navigation'
 import ProductGrid from '@/components/products/ProductGrid'
 import Link from 'next/link'
 
+// Define a type for the product structure
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  rating: number;
+  reviews: number;
+  stock: number;
+  bestseller?: boolean;
+  new?: boolean;
+  description?: string;
+}
+
 // Using the same product data as the products page
 const allProducts = [
   {
@@ -215,7 +230,7 @@ export default function SearchPage() {
   const query = searchParams.get('q') || ''
   const [sortBy, setSortBy] = useState('featured')
   
-  const [searchResults, setSearchResults] = useState([])
+  const [searchResults, setSearchResults] = useState<Product[]>([])
   
   const sortOptions = [
     { value: 'featured', label: 'Featured' },
@@ -227,11 +242,10 @@ export default function SearchPage() {
   
   useEffect(() => {
     if (query) {
-      // Simple search implementation - in a real app, this would be done on the server
+      // Remove the reference to product.description which doesn't exist on all products
       const results = allProducts.filter(product => 
         product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.category.toLowerCase().includes(query.toLowerCase()) ||
-        product.description?.toLowerCase().includes(query.toLowerCase())
+        product.category.toLowerCase().includes(query.toLowerCase())
       )
       setSearchResults(results)
     } else {

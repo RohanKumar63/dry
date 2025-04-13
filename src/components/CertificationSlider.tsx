@@ -120,7 +120,7 @@ export default function CertificationSlider() {
                   <div className="relative w-28 h-28 md:w-32 md:h-32 mx-auto">
                     <Image
                       src={badge.image}
-                      alt={badge.alt}
+                      alt={badge.name}
                       fill
                       className="object-contain"
                     />

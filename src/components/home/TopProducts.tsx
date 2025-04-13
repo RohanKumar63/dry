@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-// Commented out unused import
 // import Image from 'next/image'
 import Link from 'next/link'
 import ProductCard from '@/components/products/ProductCard'
@@ -16,6 +15,7 @@ const featuredProducts = [
     category: 'Fruits',
     rating: 4.8,
     reviews: 124,
+    stock: 25,
     bestseller: true
   },
   {
@@ -26,6 +26,7 @@ const featuredProducts = [
     category: 'Vegetables',
     rating: 4.7,
     reviews: 89,
+    stock: 18,
     bestseller: false
   },
   {
@@ -36,6 +37,7 @@ const featuredProducts = [
     category: 'Snacks',
     rating: 4.9,
     reviews: 56,
+    stock: 32,
     bestseller: true
   },
   {
@@ -46,6 +48,7 @@ const featuredProducts = [
     category: 'Berries',
     rating: 4.6,
     reviews: 72,
+    stock: 15,
     bestseller: false
   },
   

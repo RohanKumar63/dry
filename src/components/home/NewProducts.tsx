@@ -16,6 +16,7 @@ const newArrivals = [
     category: 'Berries',
     rating: 4.9,
     reviews: 32,
+    stock: 20,
     new: true
   },
   {
@@ -26,6 +27,7 @@ const newArrivals = [
     category: 'Snacks',
     rating: 4.8,
     reviews: 17,
+    stock: 25,
     new: true
   },
   {
@@ -36,6 +38,7 @@ const newArrivals = [
     category: 'Exotics',
     rating: 4.7,
     reviews: 23,
+    stock: 30,
     new: true
   },
   {
@@ -46,6 +49,7 @@ const newArrivals = [
     category: 'Fruits',
     rating: 4.9,
     reviews: 8,
+    stock: 15,
     new: true
   },
   {
@@ -56,6 +60,7 @@ const newArrivals = [
     category: 'Vegetables',
     rating: 5.0,
     reviews: 12,
+    stock: 18,
     new: true
   },
   {
@@ -66,6 +71,7 @@ const newArrivals = [
     category: 'Snacks',
     rating: 4.6,
     reviews: 19,
+    stock: 22,
     new: true
   }
 ]
