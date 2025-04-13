@@ -25,12 +25,12 @@ export default function Home() {
               href="/products"
             />
             <CategoryCard 
-              title="Dehydrated Powders" 
+              title="Powders" 
               image="/products/2pro.jpg" 
               href="/products"
             />
             <CategoryCard 
-              title="Dehydrated Flakes" 
+              title="Flakes" 
               image="/products/3pro.jpg" 
               href="/products"
             />
