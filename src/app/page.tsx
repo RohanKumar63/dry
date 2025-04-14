@@ -5,7 +5,6 @@ import NewProducts from '@/components/home/NewProducts'
 import CertificationSlider from '@/components/CertificationSlider'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useEffect, useRef } from 'react'
 
 export default function Home() {
   return (
