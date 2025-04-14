@@ -64,7 +64,7 @@ export default function TopProductsSlider() {
   const [showRightButton, setShowRightButton] = useState(true)
   const sliderRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const primaryColor = '#E6C077'
+  const primaryColor = '#f59e0b' // Amber-500 color
   
   const filteredProducts = activeCategory === 'All' 
     ? featuredProducts 
@@ -195,10 +195,10 @@ export default function TopProductsSlider() {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex justify-between items-center mb-8">
-          <div>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+          <div className="text-center md:text-left mb-4 md:mb-0">
             <h2 className="text-3xl md:text-4xl font-playfair mb-2">Top Rated Products</h2>
-            <p className="text-gray-600">Our most loved products, backed by customer reviews.</p>
+            <p className="text-gray-600 font-serif">Our most loved products, backed by customer reviews.</p>
           </div>
           
           <div className="hidden md:flex space-x-2">
@@ -206,19 +206,19 @@ export default function TopProductsSlider() {
               <>
                 <button 
                   onClick={prevSlide}
-                  className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+                  className="p-2 rounded-full border border-amber-300 hover:bg-amber-50 transition-colors"
                   aria-label="Previous slide"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-600">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                   </svg>
                 </button>
                 <button 
                   onClick={nextSlide}
-                  className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+                  className="p-2 rounded-full border border-amber-300 hover:bg-amber-50 transition-colors"
                   aria-label="Next slide"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-600">
                     <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                   </svg>
                 </button>
@@ -235,7 +235,7 @@ export default function TopProductsSlider() {
                 onClick={() => setActiveCategory(category)}
                 className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                   activeCategory === category 
-                    ? 'bg-[#E6C077] text-white' 
+                    ? 'bg-amber-500 text-white' 
                     : 'text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -327,7 +327,7 @@ export default function TopProductsSlider() {
                 <>
                   <button 
                     onClick={prevSlide}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 text-[#E6C077] p-2 rounded-full transition-all duration-300 shadow-md"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 text-amber-600 p-2 rounded-full transition-all duration-300 shadow-md"
                     aria-label="Previous slide"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
@@ -337,7 +337,7 @@ export default function TopProductsSlider() {
                   
                   <button 
                     onClick={nextSlide}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 text-[#E6C077] p-2 rounded-full transition-all duration-300 shadow-md"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 text-amber-600 p-2 rounded-full transition-all duration-300 shadow-md"
                     aria-label="Next slide"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
@@ -382,7 +382,7 @@ export default function TopProductsSlider() {
         <div className="text-center mt-12">
           <Link 
             href="/products" 
-            className="inline-flex items-center px-6 py-3 border-2 border-[#E6C077] text-[#E6C077] hover:bg-[#E6C077] hover:text-white rounded-full transition-colors font-medium"
+            className="inline-flex items-center px-6 py-3 border-2 border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white rounded-full transition-colors font-medium"
           >
             View All Products
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-2">

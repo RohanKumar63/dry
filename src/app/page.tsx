@@ -48,7 +48,8 @@ export default function Home() {
       <section className="py-16 bg-neutral-100">
         <div className="container mx-auto px-4 md:px-6">
           <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-8 md:mb-0">
+            {/* Text content - centered on mobile */}
+            <div className="md:w-1/2 mb-8 md:mb-0 text-center md:text-left">
               <h2 className="text-3xl md:text-4xl font-playfair mb-4">Our Story</h2>
               <p className="text-gray-700 mb-4">
                 Founded in 2024, TheNutriDry was born from a passion for healthy, convenient nutrition. We believe that nutritious food should be accessible, delicious, and free from artificial additives, while maintaining a long shelf life.
@@ -66,13 +67,17 @@ export default function Home() {
                 </svg>
               </Link>
             </div>
-            <div className="md:w-1/2 md:pl-12">
-              <div className="relative h-80 md:h-96 rounded-lg overflow-hidden">
+            
+            {/* Image - fixed height on mobile */}
+            <div className="w-full md:w-1/2 md:pl-12">
+              <div className="relative h-64 sm:h-80 md:h-96 rounded-lg overflow-hidden">
                 <Image 
                   src="/bg1.jpg"
                   alt="TheNutriDry premium dehydrated products"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent"></div>
               </div>

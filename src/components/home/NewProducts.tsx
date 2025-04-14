@@ -113,30 +113,30 @@ export default function NewProducts() {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex justify-between items-center mb-8">
-          <div>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+          <div className="text-center md:text-left mb-4 md:mb-0">
             <h2 className="text-3xl md:text-4xl font-playfair mb-2">New Arrivals</h2>
-            <p className="text-gray-600">The latest additions to our collection</p>
+            <p className="text-gray-600 font-serif">The latest additions to our collection</p>
           </div>
           
           <div className="hidden md:flex space-x-2">
             <button 
               onClick={() => scroll('left')}
-              className={`p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors ${!showLeftButton ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`p-2 rounded-full border border-amber-300 hover:bg-amber-50 transition-colors ${!showLeftButton ? 'opacity-50 cursor-not-allowed' : ''}`}
               aria-label="Scroll left"
               disabled={!showLeftButton}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-600">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
               </svg>
             </button>
             <button 
               onClick={() => scroll('right')}
-              className={`p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors ${!showRightButton ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`p-2 rounded-full border border-amber-300 hover:bg-amber-50 transition-colors ${!showRightButton ? 'opacity-50 cursor-not-allowed' : ''}`}
               aria-label="Scroll right"
               disabled={!showRightButton}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-600">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
               </svg>
             </button>
@@ -192,7 +192,7 @@ export default function NewProducts() {
         <div className="text-center mt-8">
           <Link 
             href="/products/new" 
-            className="inline-flex items-center px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-full transition-colors font-medium"
+            className="inline-flex items-center px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-colors font-medium"
           >
             View All New Arrivals
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-2">
