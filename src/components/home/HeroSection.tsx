@@ -53,7 +53,7 @@ export default function HeroSection() {
   
   return (
     <section 
-      className="relative h-[85vh] min-h-[600px] bg-gray-900 overflow-hidden" 
+      className="relative w-full aspect-video max-h-[85vh] bg-gray-900 overflow-hidden" 
       style={{ fontFamily: 'Poppins, sans-serif' }}
     >
       {slides.map((slide, index) => (
@@ -69,8 +69,8 @@ export default function HeroSection() {
               alt={slide.alt}
               fill
               priority
-              className="object-cover"
-              sizes="100vw"
+              className="object-cover object-center"
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, 100vw"
             />
           </div>
         </div>
@@ -79,32 +79,32 @@ export default function HeroSection() {
       {/* Navigation arrows */}
       <button 
         onClick={prevSlide}
-        className="absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/10 hover:bg-white/30 backdrop-blur-sm text-white p-2 rounded-full transition-all duration-300"
+        className="absolute left-3 md:left-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/10 hover:bg-white/30 backdrop-blur-sm text-white p-1 md:p-2 rounded-full transition-all duration-300"
         aria-label="Previous slide"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
         </svg>
       </button>
       
       <button 
         onClick={nextSlide}
-        className="absolute right-4 md:right-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/10 hover:bg-white/30 backdrop-blur-sm text-white p-2 rounded-full transition-all duration-300"
+        className="absolute right-3 md:right-8 top-1/2 transform -translate-y-1/2 z-20 bg-white/10 hover:bg-white/30 backdrop-blur-sm text-white p-1 md:p-2 rounded-full transition-all duration-300"
         aria-label="Next slide"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </button>
       
       {/* Indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-3">
+      <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2 md:space-x-3">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`h-3 rounded-full transition-all duration-300 ${
-              index === currentSlide ? 'w-8' : 'w-3'
+            className={`h-2 md:h-3 rounded-full transition-all duration-300 ${
+              index === currentSlide ? 'w-6 md:w-8' : 'w-2 md:w-3'
             }`}
             style={{ 
               backgroundColor: index === currentSlide ? primaryColor : 'rgba(255, 255, 255, 0.5)',
