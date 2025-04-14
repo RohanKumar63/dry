@@ -79,7 +79,7 @@ export default function TopProducts() {
                 onClick={() => setActiveCategory(category)}
                 className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                   activeCategory === category 
-                    ? 'bg-amber-600 text-white' 
+                    ? 'bg-[#E6C077] text-white' 
                     : 'text-gray-700 hover:bg-gray-200'
                 }`}
               >
@@ -98,7 +98,7 @@ export default function TopProducts() {
         <div className="text-center mt-12">
           <Link 
             href="/products" 
-            className="inline-flex items-center px-6 py-3 border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white rounded-full transition-colors font-medium"
+            className="inline-flex items-center px-6 py-3 border-2 border-[#E6C077] text-[#E6C077] hover:bg-[#E6C077] hover:text-white rounded-full transition-colors font-medium"
           >
             View All Products
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-2">

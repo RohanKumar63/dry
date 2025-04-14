@@ -22,7 +22,7 @@ type Product = {
 const newArrivalsProducts: Product[] = [
   {
     id: '6',
-    name: 'Superfood Berry Blend',
+    name: 'Dried Kasuri Methi (Fenugreek)',
     price: 18.99,
     image: '/products/6.jpg',
     category: 'Berries',
@@ -34,7 +34,7 @@ const newArrivalsProducts: Product[] = [
   },
   {
     id: '7',
-    name: 'Crispy Vegetable Chips',
+    name: 'Dried Dill Leaves (Soya Leaves)',
     price: 8.99,
     image: '/products/7.jpg',
     category: 'Snacks',
@@ -46,7 +46,7 @@ const newArrivalsProducts: Product[] = [
   },
   {
     id: '8',
-    name: 'Mixed Tropical Fruits',
+    name: 'Dehydrated Spinach (Palak Leaves)',
     price: 12.99,
     image: '/products/8.jpg',
     category: 'Exotics',
@@ -58,7 +58,7 @@ const newArrivalsProducts: Product[] = [
   },
   {
     id: '9',
-    name: 'Premium Dried Mango',
+    name: 'Dehydrated Bittergourd (Karela Flakes)',
     price: 9.99,
     image: '/products/9.jpg',
     category: 'Fruits',
@@ -70,9 +70,9 @@ const newArrivalsProducts: Product[] = [
   },
   {
     id: '10',
-    name: 'Organic Root Vegetables',
+    name: 'Dried Amla',
     price: 11.99,
-    image: '/products/10.jpg',
+    image: '/products/1.jpg',
     category: 'Vegetables',
     rating: 5.0,
     reviews: 12,
@@ -82,7 +82,7 @@ const newArrivalsProducts: Product[] = [
   },
   {
     id: '11',
-    name: 'Healthy Snack Pack',
+    name: 'Dehydrated Carrot (Cubes/Flakes)',
     price: 15.99,
     image: '/products/11.jpg',
     category: 'Snacks',

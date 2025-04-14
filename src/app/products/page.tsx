@@ -108,7 +108,7 @@ const allProducts = [
     "id": "10",
     "name": "Dehydrated Carrot (Cubes/Flakes)",
     "price": 3.99,
-    "image": "/products/10.jpg",
+    "image": "/products/11.jpg",
     "category": "Vegetables",
     "rating": 4.8,
     "reviews": 112,
@@ -119,7 +119,7 @@ const allProducts = [
     "id": "11",
     "name": "Dehydrated Ginger Flakes",
     "price": 6.49,
-    "image": "/products/11.jpg",
+    "image": "/products/12.jpg",
     "category": "Spices & Herbs",
     "rating": 4.9,
     "reviews": 145,
@@ -128,7 +128,7 @@ const allProducts = [
   },
   {
     "id": "12",
-    "name": "Dehydrated Raw Banana Flakes",
+    "name": "Dehydrated Ginger Flakes",
     "price": 4.29,
     "image": "/products/12.jpg",
     "category": "Fruits",
@@ -139,7 +139,7 @@ const allProducts = [
   },
   {
     "id": "13",
-    "name": "Dehydrated Beet Root Flakes",
+    "name": "Dehydrated Raw Banana Flakes",
     "price": 19.99,
     "image": "/products/13.jpg",
     "category": "Vegetables",
@@ -150,7 +150,7 @@ const allProducts = [
   },
   {
     "id": "14",
-    "name": "Dehydrated Green Coriander Leaf",
+    "name": "Dehydrated Gengeroot Flakes",
     "price": 3.99,
     "image": "/products/14.jpg",
     "category": "Herbs & Spices",
@@ -161,7 +161,7 @@ const allProducts = [
   },
   {
     "id": "15",
-    "name": "Dried Rose Petals",
+    "name": "Dehydrated Green Coriander Leaf ",
     "price": 5.99,
     "image": "/products/15.jpg",
     "category": "Herbs & Floral",
@@ -172,7 +172,7 @@ const allProducts = [
   },
   {
     "id": "16",
-    "name": "Dehydrated Lemon Leaf",
+    "name": "Dehydrated Rose Petals ",
     "price": 4.49,
     "image": "/products/16.jpg",
     "category": "Herbs & Tea",
@@ -183,7 +183,7 @@ const allProducts = [
   },
   {
     "id": "17",
-    "name": "Dried Fresh Raw Root Turmeric (Kacchi Haldi)",
+    "name": "Dehydrated Lemon Leaf",
     "price": 8.99,
     "image": "/products/17.jpg",
     "category": "Spices & Herbs",
@@ -194,7 +194,7 @@ const allProducts = [
   },
   {
     "id": "18",
-    "name": "Dehydrated Green Chilli Flakes",
+    "name": "Dried Fresh Raw Root Turmeric",
     "price": 4.99,
     "image": "/products/18.jpg",
     "category": "Spices & Seasonings",
@@ -205,7 +205,7 @@ const allProducts = [
   },
   {
     "id": "19",
-    "name": "Nutrient-Dense Veggie Mix",
+    "name": "Dehydrated Green Chilli Flakes",
     "price": 12.49,
     "image": "/products/19.jpg",
     "category": "Vegetables",
