@@ -110,7 +110,7 @@ export default function CertificationSlider() {
                 className="flex-shrink-0 w-1/2 sm:w-1/4 lg:w-1/5 px-4"
                 style={{ transition: 'all 0.3s ease' }}
               >
-                <div className="bg-white rounded-full p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center h-full">
+                <div className="flex flex-col items-center justify-center">
                   <div className="relative w-28 h-28 md:w-32 md:h-32 mx-auto">
                     <Image
                       src={badge.image}
