@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-// import Image from 'next/image'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import ProductCard from '@/components/products/ProductCard'
 
@@ -51,17 +50,123 @@ const featuredProducts = [
     stock: 15,
     bestseller: false
   },
-  
 ]
 
 const categories = ['All', 'Fruits', 'Vegetables', 'Snacks', 'Berries', 'Exotics']
 
-export default function TopProducts() {
+export default function TopProductsSlider() {
   const [activeCategory, setActiveCategory] = useState('All')
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [touchStart, setTouchStart] = useState(0)
+  const [touchEnd, setTouchEnd] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+  const sliderRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const primaryColor = '#E6C077'
   
   const filteredProducts = activeCategory === 'All' 
     ? featuredProducts 
     : featuredProducts.filter(product => product.category === activeCategory)
+  
+  // Determine how many products to show per slide based on screen size
+  const [productsPerSlide, setProductsPerSlide] = useState(4)
+  
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth
+      if (width < 640) {
+        setProductsPerSlide(1) // Mobile: 1 product per slide
+        setIsMobile(true)
+      } else if (width < 768) {
+        setProductsPerSlide(2) // Small tablets: 2 products per slide
+        setIsMobile(false)
+      } else if (width < 1024) {
+        setProductsPerSlide(3) // Large tablets: 3 products per slide
+        setIsMobile(false)
+      } else {
+        setProductsPerSlide(4) // Desktop: 4 products per slide
+        setIsMobile(false)
+      }
+    }
+    
+    // Set initial value
+    handleResize()
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize)
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  
+  // Calculate total number of slides needed
+  const totalSlides = Math.ceil(filteredProducts.length / productsPerSlide)
+  
+  // Handle automatic slide transitions for desktop
+  useEffect(() => {
+    if (isMobile) return; // Don't auto-rotate on mobile
+    
+    const interval = setInterval(() => {
+      if (totalSlides > 1) {
+        setCurrentSlide((prev) => (prev + 1) % totalSlides)
+      }
+    }, 6000)
+    
+    return () => clearInterval(interval)
+  }, [totalSlides, isMobile])
+  
+  // Reset current slide when changing categories
+  useEffect(() => {
+    setCurrentSlide(0)
+    
+    // Reset scroll position on category change for mobile
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = 0;
+    }
+  }, [activeCategory])
+  
+  // Function to handle manual navigation
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index)
+  }
+  
+  // Function to go to next slide
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides)
+  }
+  
+  // Function to go to previous slide
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1))
+  }
+  
+  // Touch event handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+  
+  const handleTouchEnd = () => {
+    if (touchStart - touchEnd > 100) {
+      // Swipe left
+      nextSlide()
+    }
+    
+    if (touchStart - touchEnd < -100) {
+      // Swipe right
+      prevSlide()
+    }
+  }
+  
+  // Apply touch events only on desktop slider
+  const touchProps = !isMobile ? {
+    onTouchStart: handleTouchStart,
+    onTouchMove: handleTouchMove,
+    onTouchEnd: handleTouchEnd
+  } : {}
   
   return (
     <section className="py-16 bg-white">
@@ -89,10 +194,131 @@ export default function TopProducts() {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        <div className="relative">
+          {/* Mobile Products Slider (similar to NewProducts) */}
+          {isMobile ? (
+            <>
+              <div 
+                ref={scrollContainerRef}
+                className="flex overflow-x-auto gap-6 pb-4 hide-scrollbar scroll-smooth"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {filteredProducts.map(product => (
+                  <div key={product.id} className="min-w-[280px] max-w-[280px] flex-shrink-0">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Mobile scroll indicators */}
+              <div className="flex justify-center mt-4 md:hidden">
+                <div className="flex space-x-1">
+                  {filteredProducts.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                        index === currentSlide ? 'bg-[#E6C077] w-6' : 'bg-gray-300 hover:bg-amber-600'
+                      }`}
+                      aria-label={`Scroll to product ${index + 1}`}
+                      onClick={() => {
+                        if (scrollContainerRef.current) {
+                          const cardWidth = 280 + 24; // card width + gap
+                          scrollContainerRef.current.scrollTo({
+                            left: index * cardWidth,
+                            behavior: 'smooth'
+                          });
+                          setCurrentSlide(index);
+                        }
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            /* Desktop Products Slider (original behavior) */
+            <>
+              <div 
+                className="overflow-hidden"
+                ref={sliderRef}
+                {...touchProps}
+              >
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+                >
+                  {Array.from({ length: totalSlides }).map((_, slideIndex) => (
+                    <div 
+                      key={slideIndex} 
+                      className="min-w-full flex flex-nowrap gap-6"
+                    >
+                      {filteredProducts
+                        .slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide)
+                        .map(product => (
+                          <div key={product.id} className={`flex-1 min-w-0`}>
+                            <ProductCard product={product} />
+                          </div>
+                        ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Navigation arrows - only show if there are multiple slides */}
+              {totalSlides > 1 && (
+                <>
+                  <button 
+                    onClick={prevSlide}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 text-[#E6C077] p-2 rounded-full transition-all duration-300 shadow-md"
+                    aria-label="Previous slide"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                  </button>
+                  
+                  <button 
+                    onClick={nextSlide}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 text-[#E6C077] p-2 rounded-full transition-all duration-300 shadow-md"
+                    aria-label="Next slide"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </button>
+                </>
+              )}
+              
+              {/* Indicators - only show if there are multiple slides */}
+              {totalSlides > 1 && (
+                <div className="flex justify-center mt-8 space-x-2">
+                  {Array.from({ length: totalSlides }).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToSlide(index)}
+                      className={`h-2.5 rounded-full transition-all duration-300 ${
+                        index === currentSlide ? 'w-8' : 'w-2.5'
+                      }`}
+                      style={{ 
+                        backgroundColor: index === currentSlide ? primaryColor : 'rgba(0, 0, 0, 0.2)',
+                      }}
+                      onMouseOver={(e) => {
+                        if (index !== currentSlide) {
+                          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (index !== currentSlide) {
+                          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+                        }
+                      }}
+                      aria-label={`Go to slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
         
         <div className="text-center mt-12">
