@@ -7,38 +7,32 @@ const certificationBadges = [
   {
     id: 1,
     name: "100% Pure",
-    image: "/slider1.jpg",
-    
+    image: "/pure-badge.jpg", // Image 5 - 100% Pure green stamp
   },
   {
     id: 2,
-    name: "100% Vegan",
-    image: "/slider2.jpg",
-   
+    name: "No Additives",
+    image: "/no-additives-badge.jpg", // Image 6 - No Additives green badge
   },
   {
     id: 3,
-    name: "Gluten Free",
-    image: "/slider3.jpg",
-   
+    name: "Halal",
+    image: "/halal-badge.jpg", // Image 1 - Halal green certification
   },
   {
     id: 4,
-    name: "Halal",
-    image: "/slider4.jpg",
-  
+    name: "No Preservatives",
+    image: "/no-preservatives-badge.jpg", // Image 2 - No Preservatives stamp
   },
   {
     id: 5,
-    name: "No Additives",
-    image: "/slider5.jpg",
-   
+    name: "Gluten Free",
+    image: "/gluten-free-badge.jpg", // Image 3 - Gluten Free with grain symbol
   },
   {
     id: 6,
-    name: "No Preservatives",
-    image: "/slider6.jpg",
-   
+    name: "100% Vegan",
+    image: "/vegan-badge.jpg", // Image 4 - 100% Vegan green stamp
   }
 ]
 
