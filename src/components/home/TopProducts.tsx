@@ -192,15 +192,6 @@ export default function TopProductsSlider() {
     onTouchEnd: handleTouchEnd
   } : {}
   
-  // Function to scroll horizontally on mobile
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const { current } = scrollContainerRef
-      const scrollAmount = direction === 'left' ? -current.clientWidth / 2 : current.clientWidth / 2
-      current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-    }
-  }
-  
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 md:px-6">
