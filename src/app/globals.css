@@ -52,3 +52,24 @@ h1, h2, h3, h4, h5, h6 {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+/* Add to src/app/globals.css */
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.fruit-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Hide scrollbar during preloader */
+body.loading {
+  overflow: hidden;
+}
+
+

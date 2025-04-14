@@ -60,7 +60,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-xs text-gray-500">© 2024 TheNutriDry. All rights reserved.</p>
+          <p className="text-xs text-gray-500">© 2025 TheNutriDry. All rights reserved.</p>
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <Image 
               src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/visa.svg" 
