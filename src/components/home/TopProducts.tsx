@@ -60,6 +60,8 @@ export default function TopProductsSlider() {
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
+  const [showLeftButton, setShowLeftButton] = useState(false)
+  const [showRightButton, setShowRightButton] = useState(true)
   const sliderRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const primaryColor = '#E6C077'
@@ -99,6 +101,27 @@ export default function TopProductsSlider() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
   
+  // Function to check if scroll buttons should be shown
+  const checkScrollButtons = () => {
+    if (!scrollContainerRef.current) return
+    
+    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
+    setShowLeftButton(scrollLeft > 0)
+    setShowRightButton(scrollLeft < scrollWidth - clientWidth - 10) // 10px buffer
+  }
+  
+  // Add scroll event listener for mobile
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (container && isMobile) {
+      container.addEventListener('scroll', checkScrollButtons)
+      // Initial check
+      checkScrollButtons()
+      
+      return () => container.removeEventListener('scroll', checkScrollButtons)
+    }
+  }, [isMobile])
+  
   // Calculate total number of slides needed
   const totalSlides = Math.ceil(filteredProducts.length / productsPerSlide)
   
@@ -122,6 +145,7 @@ export default function TopProductsSlider() {
     // Reset scroll position on category change for mobile
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollLeft = 0;
+      checkScrollButtons();
     }
   }, [activeCategory])
   
@@ -168,13 +192,49 @@ export default function TopProductsSlider() {
     onTouchEnd: handleTouchEnd
   } : {}
   
+  // Function to scroll horizontally on mobile
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const { current } = scrollContainerRef
+      const scrollAmount = direction === 'left' ? -current.clientWidth / 2 : current.clientWidth / 2
+      current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+    }
+  }
+  
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 md:px-6">
-        <h2 className="text-3xl md:text-4xl font-playfair text-center mb-4">Top Rated Products</h2>
-        <p className="text-gray-600 text-center max-w-2xl mx-auto mb-8">
-          Our most loved products, backed by customer reviews and exceptional quality.
-        </p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-playfair mb-2">Top Rated Products</h2>
+            <p className="text-gray-600">Our most loved products, backed by customer reviews.</p>
+          </div>
+          
+          <div className="hidden md:flex space-x-2">
+            {!isMobile && totalSlides > 1 && (
+              <>
+                <button 
+                  onClick={prevSlide}
+                  className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+                  aria-label="Previous slide"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                  </svg>
+                </button>
+                <button 
+                  onClick={nextSlide}
+                  className="p-2 rounded-full border border-gray-300 hover:bg-gray-100 transition-colors"
+                  aria-label="Next slide"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                  </svg>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
         
         <div className="flex justify-center mb-10">
           <div className="inline-flex flex-wrap justify-center gap-2 p-1 bg-gray-100 rounded-full">
@@ -195,9 +255,19 @@ export default function TopProductsSlider() {
         </div>
         
         <div className="relative">
-          {/* Mobile Products Slider (similar to NewProducts) */}
+          {/* Mobile Products Slider (exactly like NewProducts) */}
           {isMobile ? (
             <>
+              {/* Left shadow gradient for scroll indication */}
+              {showLeftButton && (
+                <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+              )}
+              
+              {/* Right shadow gradient for scroll indication */}
+              {showRightButton && (
+                <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+              )}
+              
               <div 
                 ref={scrollContainerRef}
                 className="flex overflow-x-auto gap-6 pb-4 hide-scrollbar scroll-smooth"
@@ -216,9 +286,7 @@ export default function TopProductsSlider() {
                   {filteredProducts.map((_, index) => (
                     <button
                       key={index}
-                      className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                        index === currentSlide ? 'bg-[#E6C077] w-6' : 'bg-gray-300 hover:bg-amber-600'
-                      }`}
+                      className="w-2 h-2 rounded-full bg-gray-300 hover:bg-amber-600 focus:bg-amber-600"
                       aria-label={`Scroll to product ${index + 1}`}
                       onClick={() => {
                         if (scrollContainerRef.current) {
@@ -227,7 +295,6 @@ export default function TopProductsSlider() {
                             left: index * cardWidth,
                             behavior: 'smooth'
                           });
-                          setCurrentSlide(index);
                         }
                       }}
                     />
