@@ -163,7 +163,7 @@ export default function RecentPurchaseNotification() {
       const interval = setInterval(() => {
         showPurchase()
         logStatus('Interval notification triggered')
-      }, 100000) // Show every 15 seconds for testing
+      }, 15000) // Show every 15 seconds for testing
       
       return () => clearInterval(interval)
     }, 2000) // First notification after 2 seconds
@@ -179,17 +179,19 @@ export default function RecentPurchaseNotification() {
       <AnimatePresence>
         {isVisible && purchase && (
           <motion.div
-            className="fixed bottom-4 right-4 z-50 max-w-xs w-full bg-white rounded-lg shadow-lg overflow-hidden"
+            className="fixed bottom-4 z-50 overflow-hidden bg-white rounded-lg shadow-lg
+                       sm:right-4 sm:max-w-xs sm:w-auto 
+                       right-2 w-[calc(100%-1rem)] max-w-full"
             initial={{ x: 100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 100, opacity: 0 }}
             transition={{ duration: 0.3 }}
             style={{ zIndex: 9999 }} // Ensure it's above everything
           >
-            <div className="p-4">
-              <div className="flex items-start">
-                {/* Product image */}
-                <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 bg-gray-100">
+            <div className="p-3 sm:p-4">
+              <div className="flex items-start space-x-2 sm:space-x-3">
+                {/* Product image - smaller on mobile */}
+                <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-md overflow-hidden flex-shrink-0 bg-gray-100">
                   <Image
                     src={purchase.product.image}
                     alt={purchase.product.name}
@@ -198,20 +200,20 @@ export default function RecentPurchaseNotification() {
                   />
                 </div>
                 
-                {/* Purchase information */}
-                <div className="ml-3 flex-1">
-                  <p className="text-sm font-medium text-gray-900">
+                {/* Purchase information - adjust text size for mobile */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                     {purchase.person} from {purchase.location}
                   </p>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-gray-500 truncate">
                     purchased <span className="font-medium">{purchase.product.name}</span>
                   </p>
-                  <p className="mt-1 text-xs text-gray-400">
+                  <p className="mt-0.5 sm:mt-1 text-xs text-gray-400">
                     {purchase.time}
                   </p>
                   
                   {/* View product link */}
-                  <div className="mt-2">
+                  <div className="mt-1 sm:mt-2">
                     <a 
                       href={`/products/${purchase.product.id}`}
                       className="text-xs font-medium text-amber-600 hover:text-amber-800"
@@ -221,16 +223,16 @@ export default function RecentPurchaseNotification() {
                   </div>
                 </div>
                 
-                {/* Close button */}
+                {/* Close button - slightly smaller on mobile */}
                 <button
                   onClick={() => {
                     setIsVisible(false)
                     logStatus('Notification closed by user')
                   }}
-                  className="ml-4 text-gray-400 hover:text-gray-500"
+                  className="text-gray-400 hover:text-gray-500 flex-shrink-0 ml-1"
                 >
                   <span className="sr-only">Close</span>
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -248,7 +250,7 @@ export default function RecentPurchaseNotification() {
             </div>
             
             {/* Don't show again option */}
-            <div className="border-t border-gray-100 px-4 py-2">
+            <div className="border-t border-gray-100 px-3 py-1.5 sm:px-4 sm:py-2">
               <button 
                 onClick={() => {
                   setIsVisible(false)
