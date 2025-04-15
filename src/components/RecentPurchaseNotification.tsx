@@ -27,7 +27,7 @@ const indianNames = [
   'Shaurya', 'Advait', 'Dhruv', 'Kabir', 'Ritvik'
 ]
 
-// Product data with actual image paths
+
 const products = [
   {
     id: "1",
