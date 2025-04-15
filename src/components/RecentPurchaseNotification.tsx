@@ -154,19 +154,19 @@ export default function RecentPurchaseNotification() {
       }, 5000)
     }
     
-    // Shorter initial delay for testing (2 seconds)
+    // Initial delay of 9 seconds before showing first notification
     const initialDelay = setTimeout(() => {
       showPurchase()
       logStatus('First notification triggered')
       
-      // Set interval for recurring notifications (shorter interval for testing)
+      // Set interval for recurring notifications (every 2 minutes)
       const interval = setInterval(() => {
         showPurchase()
         logStatus('Interval notification triggered')
-      }, 15000) // Show every 15 seconds for testing
+      }, 120000) // Show every 2 minutes (120,000 ms)
       
       return () => clearInterval(interval)
-    }, 2000) // First notification after 2 seconds
+    }, 9000) // First notification after 9 seconds
     
     return () => clearTimeout(initialDelay)
   }, [])
