@@ -163,7 +163,7 @@ export default function RecentPurchaseNotification() {
       const interval = setInterval(() => {
         showPurchase()
         logStatus('Interval notification triggered')
-      }, 15000) // Show every 15 seconds for testing
+      }, 100000) // Show every 15 seconds for testing
       
       return () => clearInterval(interval)
     }, 2000) // First notification after 2 seconds
