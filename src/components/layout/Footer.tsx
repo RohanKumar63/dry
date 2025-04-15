@@ -5,17 +5,39 @@ export default function Footer() {
   return (
     <footer className="bg-gradient-to-b from-gray-900 to-black text-gray-300">
       <div className="container mx-auto px-4 md:px-6 py-12">
+        {/* Mobile View Company Name */}
+        <div className="md:hidden flex flex-col items-center mb-8">
+          <Image 
+            src="/logo.svg" 
+            alt="TheNutriDry" 
+            width={150} 
+            height={50} 
+            className="h-14 w-auto hover:opacity-80 transition-all duration-300"
+          />
+          <h2 className="text-xl font-bold mt-2">
+            <span className="text-white">The</span>
+            <span className="text-green-500">Nutri</span>
+            <span className="text-amber-400">Dry</span>
+          </h2>
+        </div>
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand Column */}
-          <div className="space-y-5">
-            <Image 
-              src="/2.O.svg" 
-              alt="TheNutriDry" 
-              width={180} 
-              height={64} 
-              className="h-16 w-auto brightness-200 filter hover:brightness-150 transition-all duration-300"
-            />
+          <div className="space-y-5 hidden md:block">
+            <div className="flex flex-col items-start">
+              <Image 
+                src="/logo.svg" 
+                alt="TheNutriDry" 
+                width={180} 
+                height={64} 
+                className="h-16 w-auto hover:opacity-80 transition-all duration-300"
+              />
+              <h2 className="text-xl font-bold mt-2">
+                <span className="text-white">The</span>
+                <span className="text-green-500">Nutri</span>
+                <span className="text-amber-400">Dry</span>
+              </h2>
+            </div>
             <p className="text-sm max-w-xs leading-relaxed">
               Premium dehydrated fruits and vegetables. 100% natural, preservative-free, and nutrient-rich.
             </p>
@@ -24,6 +46,26 @@ export default function Footer() {
               <SocialIcon href="#" icon="instagram" />
               <SocialIcon href="#" icon="twitter" />
               <SocialIcon href="#" icon="pinterest" />
+            </div>
+          </div>
+          
+          {/* Contact Details Column */}
+          <div className="space-y-5">
+            <h3 className="text-white font-semibold mb-5 text-lg">Contact Us</h3>
+            <div className="space-y-4 text-sm">
+              <div>
+                <p className="font-medium text-amber-400">Phone</p>
+                <p>+91 9984001117</p>
+                <p>+91 9984001113</p>
+              </div>
+              <div>
+                <p className="font-medium text-amber-400">Email</p>
+                <p>info.nutridry@gmail.com</p>
+              </div>
+              <div>
+                <p className="font-medium text-amber-400">Location</p>
+                <p className="leading-relaxed">122/3, Awadh Vihar Colony, Near Amausi Intl. Airport, Kanpur Road, Lucknow, 226023</p>
+              </div>
             </div>
           </div>
           
