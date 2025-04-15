@@ -106,9 +106,9 @@ export default function ContactPage() {
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Location</h3>
                     <p className="mt-1 text-gray-600">
-                      123 Nutrition Street<br />
-                      Healthy Valley, Food City<br />
-                      India - 400001
+                    122/3, Awadh Vihar Colony,<br />
+                    Near Amausi Intl. Airport,<br />
+                    Kanpur Road, Lucknow, 226023
                     </p>
                   </div>
                 </div>
@@ -287,7 +287,7 @@ export default function ContactPage() {
         
         <div className="bg-gray-100 rounded-lg overflow-hidden h-96 relative">
           <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.1123547186914!2d72.82768071538567!3d19.068619987096607!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c9c8761b5e7f%3A0x53c438c5aca4c3e4!2sMumbai%2C%20Maharashtra%2C%20India!5e0!3m2!1sen!2sus!4v1647874688387!5m2!1sen!2sus" 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.9048741847673!2d80.88594307549115!3d26.82210007681714!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399bfda9edc259d1%3A0x3b2b44cd948c56bc!2sAwadh%20Vihar%20Colony%2C%20Sarojini%20Nagar%2C%20Lucknow%2C%20Uttar%20Pradesh%20226023%2C%20India!5e0!3m2!1sen!2sus!4v1713010142112!5m2!1sen!2sus" 
             width="100%" 
             height="100%" 
             style={{ border: 0 }} 

@@ -33,6 +33,16 @@ const certificationBadges = [
     id: 6,
     name: "100% Vegan",
     image: "/vegan-badge.jpg", // Image 4 - 100% Vegan green stamp
+  },
+  {
+    id: 7,
+    name: "Make in India",
+    image: "/Make_in_India.png", // Image 4 - 100% Vegan green stamp
+  },
+  {
+    id: 8,
+    name: "fssai",
+    image: "/fssai.webp", // Image 4 - 100% Vegan green stamp
   }
 ]
 
