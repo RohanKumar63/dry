@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unescaped-entities */
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -12,6 +11,12 @@ if (!process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID ||
     !process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID ||
     !process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY) {
   throw new Error('Missing EmailJS environment variables');
+}
+
+// At the top of your file, add these type definitions
+interface EmailJSError extends Error {
+  text?: string;
+  status?: number;
 }
 
 const glowAnimation = `
@@ -94,14 +99,16 @@ export default function ContactPage() {
       } else {
         throw new Error('Failed to send email')
       }
-    } catch (error: any) {
-      // Better error logging
+    } catch (error: unknown) {
+      // Type guard to check if error is EmailJSError
+      const emailError = error as EmailJSError;
+      
       console.error('Error sending email:', {
-        error: error,
-        errorMessage: error?.message || 'Unknown error',
-        errorDetails: error?.text || 'No details available',
-        errorStatus: error?.status || 'No status available'
-      })
+        error: emailError,
+        errorMessage: emailError?.message || 'Unknown error',
+        errorDetails: emailError?.text || 'No details available',
+        errorStatus: emailError?.status || 'No status available'
+      });
       setFormStatus('error')
     } finally {
       setIsSubmitting(false)
@@ -241,7 +248,7 @@ export default function ContactPage() {
               
               {formStatus === 'success' && (
                 <div className="bg-green-50 text-green-800 p-4 rounded-md mb-6">
-                  Thank you for your message! We'll get back to you as soon as possible.
+                  Thank you for your message! We&apos;ll get back to you as soon as possible.
                 </div>
               )}
               
