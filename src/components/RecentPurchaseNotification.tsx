@@ -27,41 +27,62 @@ const indianNames = [
   'Shaurya', 'Advait', 'Dhruv', 'Kabir', 'Ritvik'
 ]
 
-// Product data with placeholder images
+// Product data with actual image paths
 const products = [
   {
     id: "1",
     name: "Dried Amla",
     price: 12.99,
-    image: "/api/placeholder/400/400", // Using placeholder images for testing
+    image: "/products/1.jpg",
     category: "Fruits"
   },
   {
     id: "2",
     name: "Organic Wheatgrass",
     price: 14.99,
-    image: "/api/placeholder/400/400",
+    image: "/products/2.jpg",
     category: "Superfoods"
   },
   {
     id: "3",
     name: "Red Dehydrated Onion Flakes",
     price: 9.49,
-    image: "/api/placeholder/400/400",
+    image: "/products/3.jpg",
     category: "Spices & Herbs"
   },
   {
     id: "4",
     name: "Dried Amla Granules",
     price: 11.49,
-    image: "/api/placeholder/400/400",
+    image: "/products/4.jpg",
     category: "Fruits"
   },
   {
     id: "5",
-    name: "Dried Broccoli",
+    name: "Dried Broccoli (Green Gobhi)",
     price: 13.99,
-    image: "/api/placeholder/400/400",
+    image: "/products/5.jpg",
+    category: "Vegetables"
+  },
+  {
+    id: "6",
+    name: "Dried Kasuri Methi (Fenugreek)",
+    price: 7.99,
+    image: "/products/6.jpg",
+    category: "Spices & Herbs"
+  },
+  {
+    id: "7",
+    name: "Dried Dill Leaves (Soya Leaves)",
+    price: 6.99,
+    image: "/products/7.jpg",
+    category: "Spices & Herbs"
+  },
+  {
+    id: "8",
+    name: "Dehydrated Spinach (Palak Leaves)",
+    price: 5.49,
+    image: "/products/8.jpg",
     category: "Vegetables"
   }
 ]
@@ -239,7 +260,7 @@ export default function RecentPurchaseNotification() {
                 }}
                 className="text-xs text-gray-500 hover:text-gray-700"
               >
-                Don't show these notifications
+                Don&apos;t show these notifications
               </button>
             </div>
           </motion.div>
