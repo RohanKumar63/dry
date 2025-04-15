@@ -3,21 +3,23 @@ import Image from 'next/image'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-gradient-to-b from-gray-900 to-black text-gray-300">
       <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+          {/* Brand Column */}
+          <div className="space-y-5">
             <Image 
-              src="/logo.svg" 
+              src="/2.O.svg" 
               alt="TheNutriDry" 
-              width={140} 
-              height={50} 
-              className="h-10 w-auto brightness-200 filter"
+              width={180} 
+              height={64} 
+              className="h-16 w-auto brightness-200 filter hover:brightness-150 transition-all duration-300"
             />
-            <p className="text-sm max-w-xs">
+            <p className="text-sm max-w-xs leading-relaxed">
               Premium dehydrated fruits and vegetables. 100% natural, preservative-free, and nutrient-rich.
             </p>
-            <div className="flex space-x-4 pt-2">
+            <div className="flex space-x-3 pt-2">
               <SocialIcon href="#" icon="facebook" />
               <SocialIcon href="#" icon="instagram" />
               <SocialIcon href="#" icon="twitter" />
@@ -25,9 +27,10 @@ export default function Footer() {
             </div>
           </div>
           
+          {/* Shop Links */}
           <div>
-            <h3 className="text-white font-medium mb-4">Shop</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-white font-semibold mb-5 text-lg">Shop</h3>
+            <ul className="space-y-3 text-sm">
               <FooterLink href="/products">All Products</FooterLink>
               <FooterLink href="/products?category=Fruits">Fruits</FooterLink>
               <FooterLink href="/products?category=Vegetables">Vegetables</FooterLink>
@@ -36,9 +39,10 @@ export default function Footer() {
             </ul>
           </div>
           
+          {/* Company Links */}
           <div>
-            <h3 className="text-white font-medium mb-4">Company</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-white font-semibold mb-5 text-lg">Company</h3>
+            <ul className="space-y-3 text-sm">
               <FooterLink href="/about">About Us</FooterLink>
               <FooterLink href="/contact">Contact</FooterLink>
               <FooterLink href="/blog">Blog</FooterLink>
@@ -47,9 +51,10 @@ export default function Footer() {
             </ul>
           </div>
           
+          {/* Customer Service Links */}
           <div>
-            <h3 className="text-white font-medium mb-4">Customer Service</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-white font-semibold mb-5 text-lg">Customer Service</h3>
+            <ul className="space-y-3 text-sm">
               <FooterLink href="/shipping">Shipping & Returns</FooterLink>
               <FooterLink href="/warranty">Product Guarantee</FooterLink>
               <FooterLink href="/bulk-orders">Bulk Orders</FooterLink>
@@ -59,36 +64,37 @@ export default function Footer() {
           </div>
         </div>
         
-        <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+        {/* Bottom Section with Copyright and Payment Methods */}
+        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-xs text-gray-500">© 2025 TheNutriDry. All rights reserved.</p>
-          <div className="flex items-center space-x-4 mt-4 md:mt-0">
+          <div className="flex items-center space-x-5 mt-6 md:mt-0">
             <Image 
               src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/visa.svg" 
               alt="Visa" 
               width={32} 
               height={20} 
-              className="h-6 w-auto opacity-50"
+              className="h-6 w-auto opacity-50 hover:opacity-80 transition-opacity"
             />
             <Image 
               src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/mastercard.svg" 
               alt="Mastercard" 
               width={32} 
               height={20} 
-              className="h-6 w-auto opacity-50"
+              className="h-6 w-auto opacity-50 hover:opacity-80 transition-opacity"
             />
             <Image 
               src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/applepay.svg" 
               alt="Apple Pay" 
               width={32} 
               height={20} 
-              className="h-6 w-auto opacity-50"
+              className="h-6 w-auto opacity-50 hover:opacity-80 transition-opacity"
             />
             <Image 
               src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/paypal.svg" 
               alt="PayPal" 
               width={32} 
               height={20} 
-              className="h-6 w-auto opacity-50"
+              className="h-6 w-auto opacity-50 hover:opacity-80 transition-opacity"
             />
           </div>
         </div>
@@ -100,7 +106,11 @@ export default function Footer() {
 function FooterLink({ href, children }: { href: string, children: React.ReactNode }) {
   return (
     <li>
-      <Link href={href} className="hover:text-amber-500 transition-colors">
+      <Link 
+        href={href} 
+        className="hover:text-amber-400 transition-colors duration-300 flex items-center group"
+      >
+        <span className="inline-block w-0 group-hover:w-2 transition-all duration-300 h-0.5 bg-amber-400 mr-0 group-hover:mr-2"></span>
         {children}
       </Link>
     </li>
@@ -113,7 +123,8 @@ function SocialIcon({ href, icon }: { href: string, icon: string }) {
       href={href} 
       target="_blank" 
       rel="noopener noreferrer"
-      className="h-8 w-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-amber-600 transition-colors"
+      className="h-9 w-9 rounded-full bg-gray-800 flex items-center justify-center hover:bg-amber-600 transition-all duration-300 transform hover:-translate-y-1"
+      aria-label={icon}
     >
       <span className="sr-only">{icon}</span>
       {icon === 'facebook' && (

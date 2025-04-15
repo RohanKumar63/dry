@@ -37,7 +37,6 @@ export default function RootLayout({
           <main className="flex-grow">{children}</main>
           <Footer />
           <Toaster position="top-right" />
-          {/* RecentPurchaseNotification is a client component, should work now */}
           <RecentPurchaseNotification />
         </CartProvider>
         
