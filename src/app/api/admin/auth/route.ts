@@ -6,7 +6,23 @@ import prisma from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    // Add timeout handling
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Login request timeout')), 30000);
+    });
+
+    // Parse request body with timeout
+    const bodyPromise = req.json();
+    const body = await Promise.race([bodyPromise, timeoutPromise]);
+    
+    const { email, password } = body;
+    
+    if (!email || !password) {
+      return NextResponse.json(
+        { success: false, message: 'Email and password are required' },
+        { status: 400 }
+      );
+    }
     
     // First check if the credentials match the env variables
     const isEnvAdmin = email === process.env.ADMIN_EMAIL && 
@@ -71,8 +87,24 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Login error:', error);
+    
+    // Handle specific error types
+    if (error instanceof Error) {
+      if (error.message === 'Login request timeout') {
+        return NextResponse.json(
+          { success: false, message: 'Login request timed out' },
+          { status: 504 }
+        );
+      }
+      
+      return NextResponse.json(
+        { success: false, message: `An error occurred: ${error.message}` },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
-      { success: false, message: 'An error occurred during login' },
+      { success: false, message: 'An unexpected error occurred during login' },
       { status: 500 }
     );
   }
