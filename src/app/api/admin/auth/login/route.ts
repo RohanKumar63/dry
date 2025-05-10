@@ -1,7 +1,7 @@
 // Create a separate, simplified login endpoint
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import bcrypt from 'bcrypt'; // Changed from bcryptjs to bcrypt
+import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {

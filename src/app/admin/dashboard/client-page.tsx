@@ -47,18 +47,22 @@ export default function ClientDashboard() {
         
         const data = await res.json();
         setStats(data);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Dashboard error:', error);
-        if (error.name === 'AbortError') {
-          setError('Request timed out. Using cached data.');
-          // Try to get cached data from localStorage
-          const cachedData = localStorage.getItem('dashboard-stats');
-          if (cachedData) {
-            try {
-              setStats(JSON.parse(cachedData));
-            } catch (e) {
-              console.error('Error parsing cached data:', e);
+        if (error instanceof Error) {
+          if (error.name === 'AbortError') {
+            setError('Request timed out. Using cached data.');
+            // Try to get cached data from localStorage
+            const cachedData = localStorage.getItem('dashboard-stats');
+            if (cachedData) {
+              try {
+                setStats(JSON.parse(cachedData));
+              } catch (e) {
+                console.error('Error parsing cached data:', e);
+              }
             }
+          } else {
+            setError(`Failed to load dashboard data: ${error.message}`);
           }
         } else {
           setError('Failed to load dashboard data');

@@ -13,13 +13,21 @@ export async function GET() {
       prisma.product.count({ where: { bestseller: true } })
     ]);
     
-    // Store in a global cache (this is just an example)
-    global.dashboardStats = {
-      productCount,
-      featuredCount,
-      bestsellerCount,
-      lastUpdated: new Date().toISOString()
-    };
+    // Store in a global cache with proper typing
+    if (!global.dashboardStats) {
+      global.dashboardStats = {
+        productCount: 0,
+        featuredCount: 0,
+        bestsellerCount: 0,
+        lastUpdated: ''
+      };
+    }
+    
+    // Update the stats
+    global.dashboardStats.productCount = productCount;
+    global.dashboardStats.featuredCount = featuredCount;
+    global.dashboardStats.bestsellerCount = bestsellerCount;
+    global.dashboardStats.lastUpdated = new Date().toISOString();
     
     return NextResponse.json({
       success: true,
