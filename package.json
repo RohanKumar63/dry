@@ -12,6 +12,7 @@
     "@emailjs/browser": "^4.4.1",
     "@prisma/client": "^6.6.0",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "feather-icons": "^4.29.2",
     "framer-motion": "^12.7.1",
     "lottie-react": "^2.4.1",
@@ -36,3 +37,4 @@
     "typescript": "^5"
   }
 }
+
