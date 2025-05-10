@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 export async function GET() {
   try {
     // Check if user is logged in by verifying cookies
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('admin_session');
     
     // Simple response for now (can be expanded later with actual user data)

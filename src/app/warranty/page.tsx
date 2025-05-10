@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 'use client'
 
-import PageHeader from '@/components/layout/PageHeader'
+import { PageHeader } from '@/components/layout'
 
 export default function WarrantyPage() {
   return (
@@ -19,7 +20,7 @@ export default function WarrantyPage() {
             <h3 className="text-xl font-medium text-gray-800 mt-6 mb-3">Product Quality Guarantee</h3>
             
             <p className="mb-4">
-              All TheNutriDry products are backed by our quality guarantee. We guarantee that our products will arrive in good condition and match the description provided on our website. If your product doesn't meet these standards, we will replace it or offer a refund according to our return policy.
+              All TheNutriDry products are backed by our quality guarantee. We guarantee that our products will arrive in good condition and match the description provided on our website. If your product doesn&apos;t meet these standards, we will replace it or offer a refund according to our return policy.
             </p>
             
             <h3 className="text-xl font-medium text-gray-800 mt-6 mb-3">Return Policy</h3>

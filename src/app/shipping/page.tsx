@@ -1,9 +1,7 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 'use client'
 
-import Image from 'next/image'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import PageHeader from '@/components/layout/PageHeader'
+import { PageHeader } from '@/components/layout'
 
 export default function ShippingPage() {
   return (

@@ -9,23 +9,14 @@ export default function TopProductsSlider() {
   const [activeCategory, setActiveCategory] = useState('All')
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+  const sliderRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(true)
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [retryCount, setRetryCount] = useState(0)
-  const sliderRef = useRef<HTMLDivElement>(null)
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  
-  // Check screen size
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
   
   // Fetch bestseller products from API
   useEffect(() => {
