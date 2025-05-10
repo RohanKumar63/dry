@@ -1,6 +1,7 @@
 // src/app/api/products/route.ts
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 // In the GET function, add search query parameter handling
 export async function GET(request: Request) {
@@ -14,46 +15,51 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get('page') || '1');
     const skip = (page - 1) * limit;
 
-    // Replace the any type with a proper type
-    let whereClause: {
-      category?: string;
-      bestseller?: boolean;
-      featured?: boolean;
-      OR?: Array<{
-        name?: { contains: string; mode: 'insensitive' };
-        category?: { contains: string; mode: 'insensitive' };
-        description?: { contains: string; mode: 'insensitive' };
-      }>;
-    } = {
+    // Build where clause with proper Prisma types
+    const whereClause: Prisma.ProductWhereInput = {
       ...(category ? { category } : {}),
       ...(bestseller ? { bestseller: true } : {}),
       ...(featured ? { featured: true } : {}),
+      ...(searchQuery ? {
+        OR: [
+          { name: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+          { category: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+          { description: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+        ],
+      } : {}),
     };
 
-    // Add search functionality
-    if (searchQuery) {
-      whereClause = {
-        ...whereClause,
-        OR: [
-          { name: { contains: searchQuery, mode: 'insensitive' } },
-          { category: { contains: searchQuery, mode: 'insensitive' } },
-          { description: { contains: searchQuery, mode: 'insensitive' } },
-        ],
-      };
-    }
-
-    const [products, total] = await Promise.all([
-      prisma.product.findMany({
-        where: whereClause,
-        include: {
-          variants: true,
+    // Optimize the query by selecting only needed fields
+    const products = await prisma.product.findMany({
+      where: whereClause,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        salePrice: true,
+        image: true,
+        category: true,
+        bestseller: true,
+        featured: true,
+        rating: true,
+        reviews: true,
+        variants: {
+          select: {
+            id: true,
+            size: true,
+            price: true,
+            stock: true,
+          },
         },
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-      }),
-      prisma.product.count({ where: whereClause }),
-    ]);
+      },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Only fetch total count if needed (for pagination)
+    const total = page === 1 && limit >= 20 ? products.length : await prisma.product.count({ where: whereClause });
 
     return NextResponse.json({
       products,
