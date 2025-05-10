@@ -27,7 +27,6 @@ const indianNames = [
   'Shaurya', 'Advait', 'Dhruv', 'Kabir', 'Ritvik'
 ]
 
-
 const products = [
   {
     id: "1",
@@ -201,7 +200,7 @@ export default function RecentPurchaseNotification() {
                 </div>
                 
                 {/* Purchase information - adjust text size for mobile */}
-                <div className="flex-1 min-w-0">
+                <div>
                   <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                     {purchase.person} from {purchase.location}
                   </p>
@@ -240,14 +239,12 @@ export default function RecentPurchaseNotification() {
             </div>
             
             {/* Progress bar for automatic closing */}
-            <div className="bg-gray-100 h-1 w-full">
-              <motion.div
-                className="bg-amber-500 h-1"
-                initial={{ width: "100%" }}
-                animate={{ width: "0%" }}
-                transition={{ duration: 5, ease: "linear" }}
-              />
-            </div>
+            <motion.div
+              className="bg-amber-500 h-1"
+              initial={{ width: "100%" }}
+              animate={{ width: "0%" }}
+              transition={{ duration: 5, ease: "linear" }}
+            />
             
             {/* Don't show again option */}
             <div className="border-t border-gray-100 px-3 py-1.5 sm:px-4 sm:py-2">

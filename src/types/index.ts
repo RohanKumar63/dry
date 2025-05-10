@@ -16,6 +16,7 @@ export interface Product {
   reviews: number;
   stock: number;
   bestseller?: boolean;
+  featured?: boolean;
   new?: boolean;
   description?: string;
 }

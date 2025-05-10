@@ -15,30 +15,75 @@ export default function TopProductsSlider() {
   const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
   const sliderRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  
+  // Check screen size
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
   
   // Fetch bestseller products from API
   useEffect(() => {
     const fetchBestsellers = async () => {
+      if (retryCount > 2) {
+        // Fall back to static data after 3 retries
+        setProducts(getFallbackProducts());
+        setIsLoading(false);
+        return;
+      }
+      
       setIsLoading(true);
       try {
-        const response = await fetch('/api/products?bestseller=true&limit=8');
+        // Add cache busting to prevent stale responses
+        const cacheBuster = new Date().getTime();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
+        
+        const response = await fetch(`/api/products?bestseller=true&limit=8&cacheBust=${cacheBuster}`, {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
         if (!response.ok) {
           throw new Error('Failed to fetch bestseller products');
         }
+        
         const data = await response.json();
-        setProducts(data.products);
+        if (data.products && data.products.length > 0) {
+          setProducts(data.products);
+          setError(null);
+        } else {
+          // If no products returned, use fallback data
+          setProducts(getFallbackProducts());
+        }
       } catch (err) {
         console.error('Error fetching bestseller products:', err);
-        setError('Failed to load bestseller products');
+        
+        // Check specifically for timeout/abort errors
+        if (err instanceof Error) {
+          if (err.name === 'AbortError') {
+            setError('Request timed out. Loading limited product selection.');
+            setRetryCount(prev => prev + 1);
+            
+            // After first timeout, use fallback data but keep trying in background
+            setProducts(getFallbackProducts());
+          } else {
+            setError('Failed to load bestseller products');
+          }
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchBestsellers();
-  }, []);
+  }, [retryCount]);
   
   const categories = ['All', ...new Set(products.map(product => product.category))];
   
@@ -46,65 +91,41 @@ export default function TopProductsSlider() {
     ? products 
     : products.filter(product => product.category === activeCategory)
   
+  // Check if scroll buttons should be shown
   useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth
-      if (width < 640) {
-        setIsMobile(true)
-      } else if (width < 768) {
-        setIsMobile(false)
-      } else if (width < 1024) {
-        setIsMobile(false)
-      } else {
-        setIsMobile(false)
+    const checkScrollButtons = () => {
+      if (scrollContainerRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
+        setShowLeftButton(scrollLeft > 0)
+        setShowRightButton(scrollLeft < scrollWidth - clientWidth - 10)
       }
     }
     
-    // Set initial value
-    handleResize()
-    
-    // Add event listener
-    window.addEventListener('resize', handleResize)
-    
-    // Cleanup
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-  
-  // Function to check if scroll buttons should be shown
-  const checkScrollButtons = () => {
-    if (!scrollContainerRef.current) return
-    
-    const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
-    setShowLeftButton(scrollLeft > 0)
-    setShowRightButton(scrollLeft < scrollWidth - clientWidth - 10) // 10px buffer
-  }
-  
-  // Add scroll event listener
-  useEffect(() => {
     const container = scrollContainerRef.current
     if (container) {
       container.addEventListener('scroll', checkScrollButtons)
-      // Initial check
+      window.addEventListener('resize', checkScrollButtons)
       checkScrollButtons()
       
-      return () => container.removeEventListener('scroll', checkScrollButtons)
+      return () => {
+        container.removeEventListener('scroll', checkScrollButtons)
+        window.removeEventListener('resize', checkScrollButtons)
+      }
     }
-  }, []) // Remove scrollContainerRef.current from dependencies
+  }, [])
   
-  // Scroll functions
+  // Scroll handlers
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const cardWidth = container.querySelector('div')?.clientWidth || 0
-      container.scrollBy({ left: -cardWidth * (isMobile ? 1 : 2), behavior: 'smooth' })
+      const scrollAmount = scrollContainerRef.current.clientWidth * 0.8
+      scrollContainerRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
     }
   }
   
   const scrollRight = () => {
     if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const cardWidth = container.querySelector('div')?.clientWidth || 0
-      container.scrollBy({ left: cardWidth * (isMobile ? 1 : 2), behavior: 'smooth' })
+      const scrollAmount = scrollContainerRef.current.clientWidth * 0.8
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
     }
   }
   
@@ -129,10 +150,56 @@ export default function TopProductsSlider() {
     }
   }
   
+  // Fallback products in case of API failure
+  const getFallbackProducts = (): Product[] => {
+    return [
+      {
+        id: '1',
+        name: 'Dried Amla',
+        description: 'Premium quality dried amla with natural goodness.',
+        price: 12.99,
+        image: '/products/1.jpg',
+        category: 'Fruits',
+        rating: 4.5,
+        reviews: 24,
+        bestseller: true,
+        stock: 15
+      },
+      {
+        id: '2',
+        name: 'Organic Wheatgrass',
+        description: 'Pure organic wheatgrass packed with nutrients.',
+        price: 14.99,
+        image: '/products/2.jpg',
+        category: 'Superfoods',
+        rating: 4.8,
+        reviews: 32,
+        bestseller: true,
+        stock: 20
+      },
+      {
+        id: '3',
+        name: 'Dehydrated Red Onion Flakes',
+        description: 'Conveniently sliced and dehydrated red onion flakes.',
+        price: 9.49,
+        image: '/products/3.jpg',
+        category: 'Vegetables',
+        rating: 4.2,
+        reviews: 18,
+        bestseller: true,
+        stock: 25
+      }
+    ];
+  };
+  
   if (isLoading) {
     return (
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 md:px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-playfair text-center mb-4">Bestsellers</h2>
+          <p className="text-gray-600 text-center max-w-2xl mx-auto mb-8">
+            Our most popular products that customers love.
+          </p>
           <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading bestsellers...</p>
         </div>
@@ -140,11 +207,21 @@ export default function TopProductsSlider() {
     )
   }
   
-  if (error) {
+  if (error && filteredProducts.length === 0) {
     return (
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4 md:px-6 text-center">
-          <p className="text-red-500">{error}</p>
+          <h2 className="text-3xl md:text-4xl font-playfair text-center mb-4">Bestsellers</h2>
+          <p className="text-gray-600 text-center max-w-2xl mx-auto mb-4">
+            Our most popular products that customers love.
+          </p>
+          <p className="text-red-500 mb-4">{error}</p>
+          <button 
+            onClick={() => setRetryCount(prev => prev + 1)} 
+            className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       </section>
     )
@@ -168,7 +245,7 @@ export default function TopProductsSlider() {
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 md:px-6">
         <h2 className="text-3xl md:text-4xl font-playfair text-center mb-4">Bestsellers</h2>
-        <p className="text-gray-600 text-center max-w-2xl mx-auto mb-12">
+        <p className="text-gray-600 text-center max-w-2xl mx-auto mb-8">
           Our most popular products that customers love.
         </p>
         
@@ -191,61 +268,62 @@ export default function TopProductsSlider() {
           </div>
         </div>
         
+        {/* Error notification if using fallback data */}
+        {error && (
+          <div className="mb-6 p-2 bg-amber-50 border border-amber-200 rounded text-amber-800 text-sm text-center">
+            {error}
+          </div>
+        )}
+        
         {/* Product slider */}
         <div className="relative" ref={sliderRef}>
           {/* Left scroll button */}
           {showLeftButton && (
             <button
               onClick={scrollLeft}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 md:p-3 focus:outline-none"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-amber-600 border border-gray-200 -ml-5 focus:outline-none focus:ring-2 focus:ring-amber-500 hidden md:flex"
               aria-label="Scroll left"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-700">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
           )}
           
-          {/* Right scroll button */}
-          {showRightButton && (
-            <button
-              onClick={scrollRight}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 md:p-3 focus:outline-none"
-              aria-label="Scroll right"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-700">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
-            </button>
-          )}
-          
-          {/* Products container */}
-          <div 
-            className="flex overflow-x-auto scrollbar-hide scroll-smooth pb-4 -mx-4 px-4"
+          <div
             ref={scrollContainerRef}
+            className="flex overflow-x-auto gap-4 pb-4 hide-scrollbar snap-x"
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
           >
             {filteredProducts.map(product => (
-              <div 
-                key={product.id} 
-                className="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-4"
-              >
+              <div key={product.id} className="min-w-[280px] sm:min-w-[320px] flex-shrink-0 snap-start">
                 <ProductCard product={product} />
               </div>
             ))}
           </div>
+          
+          {/* Right scroll button */}
+          {showRightButton && (
+            <button
+              onClick={scrollRight}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-amber-600 border border-gray-200 -mr-5 focus:outline-none focus:ring-2 focus:ring-amber-500 hidden md:flex"
+              aria-label="Scroll right"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
         </div>
         
+        {/* View all button */}
         <div className="text-center mt-8">
-          <Link 
-            href="/products" 
-            className="inline-flex items-center px-6 py-3 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            View All Products
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+          <Link href="/products" className="px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-colors inline-flex items-center space-x-2">
+            <span>View All Bestsellers</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
         </div>

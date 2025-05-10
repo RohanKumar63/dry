@@ -3,37 +3,74 @@
 import { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import ProductCard from '@/components/products/ProductCard'
-import { Product } from '@/types' // Import the Product type
+import { Product } from '@/types'
 
 export default function NewProducts() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(true)
-  const [products, setProducts] = useState<Product[]>([]) // Add type annotation
+  const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null) // Add type annotation
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
   
   // Fetch new arrivals (featured products) from API
   useEffect(() => {
     const fetchNewArrivals = async () => {
+      if (retryCount > 2) {
+        // Fall back to static data after 3 retries
+        setProducts(getFallbackProducts());
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
       try {
-        const response = await fetch('/api/products?featured=true&limit=6');
+        // Add cache busting to prevent stale responses
+        const cacheBuster = new Date().getTime();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
+        
+        const response = await fetch(`/api/products?featured=true&limit=6&cacheBust=${cacheBuster}`, {
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
         if (!response.ok) {
           throw new Error('Failed to fetch new arrivals');
         }
+        
         const data = await response.json();
-        setProducts(data.products);
+        if (data.products && data.products.length > 0) {
+          setProducts(data.products);
+          setError(null);
+        } else {
+          // If no products returned, use fallback data
+          setProducts(getFallbackProducts());
+        }
       } catch (err) {
         console.error('Error fetching new arrivals:', err);
-        setError('Failed to load new arrivals');
+        
+        // Check specifically for timeout/abort errors
+        if (err instanceof Error) {
+          if (err.name === 'AbortError') {
+            setError('Request timed out. Loading limited product selection.');
+            setRetryCount(prev => prev + 1);
+            
+            // After first timeout, use fallback data but keep trying in background
+            setProducts(getFallbackProducts());
+          } else {
+            setError('Failed to load new arrivals');
+          }
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchNewArrivals();
-  }, []);
+  }, [retryCount]);
   
   // Function to check if scroll buttons should be shown
   const checkScrollButtons = () => {
@@ -41,45 +78,125 @@ export default function NewProducts() {
     
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current
     setShowLeftButton(scrollLeft > 0)
-    setShowRightButton(scrollLeft < scrollWidth - clientWidth - 10) // 10px buffer
+    setShowRightButton(scrollLeft < scrollWidth - clientWidth - 10)
   }
   
-  // Add scroll event listener
   useEffect(() => {
-    const container = scrollContainerRef.current
-    if (container) {
-      container.addEventListener('scroll', checkScrollButtons)
+    const scrollContainer = scrollContainerRef.current
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', checkScrollButtons)
+      window.addEventListener('resize', checkScrollButtons)
+      
       // Initial check
       checkScrollButtons()
       
-      return () => container.removeEventListener('scroll', checkScrollButtons)
+      return () => {
+        scrollContainer.removeEventListener('scroll', checkScrollButtons)
+        window.removeEventListener('resize', checkScrollButtons)
+      }
     }
-  }, []) // Remove scrollContainerRef.current from dependencies
+  }, [])
   
-  const scroll = (direction: 'left' | 'right') => {
+  const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      const { current } = scrollContainerRef
-      const scrollAmount = direction === 'left' ? -current.clientWidth / 2 : current.clientWidth / 2
-      current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+      const scrollContainer = scrollContainerRef.current
+      const scrollDistance = scrollContainer.clientWidth * 0.8
+      scrollContainer.scrollBy({ left: -scrollDistance, behavior: 'smooth' })
     }
   }
+  
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      const scrollContainer = scrollContainerRef.current
+      const scrollDistance = scrollContainer.clientWidth * 0.8
+      scrollContainer.scrollBy({ left: scrollDistance, behavior: 'smooth' })
+    }
+  }
+  
+  // Fallback products in case of API failure
+  const getFallbackProducts = (): Product[] => {
+    return [
+      {
+        id: '1',
+        name: 'Dried Amla',
+        description: 'Premium quality dried amla with natural goodness.',
+        price: 12.99,
+        image: '/products/1.jpg',
+        category: 'Fruits',
+        rating: 4.5,
+        reviews: 24,
+        featured: true,
+        stock: 15
+      },
+      {
+        id: '2',
+        name: 'Organic Wheatgrass',
+        description: 'Pure organic wheatgrass packed with nutrients.',
+        price: 14.99,
+        image: '/products/2.jpg',
+        category: 'Superfoods',
+        rating: 4.8,
+        reviews: 32,
+        featured: true,
+        stock: 20
+      },
+      {
+        id: '3',
+        name: 'Dehydrated Red Onion Flakes',
+        description: 'Conveniently sliced and dehydrated red onion flakes.',
+        price: 9.49,
+        image: '/products/3.jpg',
+        category: 'Vegetables',
+        rating: 4.2,
+        reviews: 18,
+        featured: true,
+        stock: 25
+      }
+    ];
+  };
   
   if (isLoading) {
     return (
       <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 md:px-6 text-center">
-          <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading new arrivals...</p>
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div className="text-center md:text-left mb-4 md:mb-0">
+              <h2 className="text-3xl md:text-4xl font-playfair mb-2">New Arrivals</h2>
+              <p className="text-gray-600 font-serif">The latest additions to our collection</p>
+            </div>
+            
+            <Link href="/products" className="px-4 py-2 text-sm border border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white rounded-full transition-colors hidden md:block">
+              View All Products
+            </Link>
+          </div>
+          
+          <div className="flex justify-center">
+            <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
         </div>
       </section>
     )
   }
   
-  if (error) {
+  if (error && products.length === 0) {
     return (
       <section className="py-16 bg-white">
-        <div className="container mx-auto px-4 md:px-6 text-center">
-          <p className="text-red-500">{error}</p>
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div className="text-center md:text-left mb-4 md:mb-0">
+              <h2 className="text-3xl md:text-4xl font-playfair mb-2">New Arrivals</h2>
+              <p className="text-gray-600 font-serif">The latest additions to our collection</p>
+            </div>
+          </div>
+          <p className="text-center text-red-500 mb-4">{error}</p>
+          <div className="text-center">
+            <button 
+              onClick={() => setRetryCount(prev => prev + 1)} 
+              className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
         </div>
       </section>
     )
@@ -110,85 +227,62 @@ export default function NewProducts() {
             <p className="text-gray-600 font-serif">The latest additions to our collection</p>
           </div>
           
-          <div className="hidden md:flex space-x-2">
-            <button 
-              onClick={() => scroll('left')}
-              className={`p-2 rounded-full border border-amber-300 hover:bg-amber-50 transition-colors ${!showLeftButton ? 'opacity-50 cursor-not-allowed' : ''}`}
-              aria-label="Scroll left"
-              disabled={!showLeftButton}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-600">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-              </svg>
-            </button>
-            <button 
-              onClick={() => scroll('right')}
-              className={`p-2 rounded-full border border-amber-300 hover:bg-amber-50 transition-colors ${!showRightButton ? 'opacity-50 cursor-not-allowed' : ''}`}
-              aria-label="Scroll right"
-              disabled={!showRightButton}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-600">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-              </svg>
-            </button>
-          </div>
+          <Link href="/products" className="px-4 py-2 text-sm border border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white rounded-full transition-colors">
+            View All Products
+          </Link>
         </div>
         
+        {/* Mobile view - show error as notification if we're using fallback data */}
+        {error && (
+          <div className="mb-4 p-2 bg-amber-50 border border-amber-200 rounded text-amber-800 text-sm text-center md:hidden">
+            {error}
+          </div>
+        )}
+        
         <div className="relative">
-          {/* Left shadow gradient for scroll indication */}
+          {/* Scroll button - left */}
           {showLeftButton && (
-            <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+            <button 
+              onClick={scrollLeft}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-amber-600 border border-gray-200 -ml-5 focus:outline-none focus:ring-2 focus:ring-amber-500 hidden md:flex"
+              aria-label="Scroll left"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
           )}
           
-          {/* Right shadow gradient for scroll indication */}
-          {showRightButton && (
-            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-          )}
-          
+          {/* Product slider */}
           <div 
             ref={scrollContainerRef}
-            className="flex overflow-x-auto gap-6 pb-4 hide-scrollbar scroll-smooth"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="flex overflow-x-auto gap-4 pb-4 hide-scrollbar snap-x"
           >
-            {products.map(product => (
-              <div key={product.id} className="min-w-[280px] max-w-[280px] flex-shrink-0">
+            {products.map((product) => (
+              <div key={product.id} className="min-w-[280px] sm:min-w-[320px] flex-shrink-0 snap-start">
                 <ProductCard product={product} />
               </div>
             ))}
           </div>
           
-          {/* Mobile scroll indicators */}
-          <div className="flex justify-center mt-4 md:hidden">
-            <div className="flex space-x-1">
-              {products.map((_, index) => (
-                <button
-                  key={index}
-                  className="w-2 h-2 rounded-full bg-gray-300 hover:bg-amber-600 focus:bg-amber-600"
-                  aria-label={`Scroll to product ${index + 1}`}
-                  onClick={() => {
-                    if (scrollContainerRef.current) {
-                      const cardWidth = 280 + 24; // card width + gap
-                      scrollContainerRef.current.scrollTo({
-                        left: index * cardWidth,
-                        behavior: 'smooth'
-                      });
-                    }
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Scroll button - right */}
+          {showRightButton && (
+            <button 
+              onClick={scrollRight}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-amber-600 border border-gray-200 -mr-5 focus:outline-none focus:ring-2 focus:ring-amber-500 hidden md:flex"
+              aria-label="Scroll right"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
         </div>
         
-        <div className="text-center mt-8">
-          <Link 
-            href="/products/new" 
-            className="inline-flex items-center px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-colors font-medium"
-          >
-            View All New Arrivals
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-            </svg>
+        {/* Mobile-only view all link */}
+        <div className="mt-8 text-center md:hidden">
+          <Link href="/products" className="px-6 py-2 text-sm bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors">
+            View All Products
           </Link>
         </div>
       </div>
