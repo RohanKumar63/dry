@@ -15,22 +15,31 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get('page') || '1');
     const skip = (page - 1) * limit;
 
-    // Build where clause with proper Prisma types
-    const whereClause: Prisma.ProductWhereInput = {
+    // Build base where clause
+    const baseWhere: Prisma.ProductWhereInput = {
       ...(category ? { category } : {}),
       ...(bestseller ? { bestseller: true } : {}),
       ...(featured ? { featured: true } : {}),
-      ...(searchQuery ? {
-        OR: [
-          { name: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
-          { category: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
-          { description: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
-        ],
-      } : {}),
     };
 
-    // Optimize the query by selecting only needed fields
-    const products = await prisma.product.findMany({
+    // Add search condition if query exists
+    const whereClause: Prisma.ProductWhereInput = searchQuery
+      ? {
+          ...baseWhere,
+          OR: [
+            { name: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+            { category: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+            { description: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+          ],
+        }
+      : baseWhere;
+
+    // Execute queries with timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Query timeout')), 8000); // 8 second timeout
+    });
+
+    const queryPromise = prisma.product.findMany({
       where: whereClause,
       select: {
         id: true,
@@ -58,8 +67,20 @@ export async function GET(request: Request) {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Only fetch total count if needed (for pagination)
-    const total = page === 1 && limit >= 20 ? products.length : await prisma.product.count({ where: whereClause });
+    // Race between query and timeout
+    const products = await Promise.race([queryPromise, timeoutPromise]);
+
+    // Get total count only if we have results
+    let total = products.length;
+    if (products.length > 0) {
+      try {
+        total = await prisma.product.count({ where: whereClause });
+      } catch (error) {
+        console.error('Error getting total count:', error);
+        // If count fails, use the length of products as fallback
+        total = products.length;
+      }
+    }
 
     return NextResponse.json({
       products,
@@ -72,6 +93,15 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Error fetching products:', error);
+    
+    // Handle timeout specifically
+    if (error instanceof Error && error.message === 'Query timeout') {
+      return NextResponse.json(
+        { error: 'Request timed out. Please try again.' },
+        { status: 504 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Failed to fetch products' },
       { status: 500 }
