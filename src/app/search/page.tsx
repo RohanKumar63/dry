@@ -16,212 +16,10 @@ type Product = {
   reviews: number;
   stock: number;
   bestseller?: boolean;
-  new?: boolean;
+  featured?: boolean;
   description?: string;
+  createdAt?: string; // Add this optional property
 }
-
-
-
-const allProducts = [
-  {
-    "id": "1",
-    "name": "Dried Amla",
-    "price": 12.99,
-    "image": "/products/1.jpg",
-    "category": "Fruits",
-    "rating": 4.8,
-    "reviews": 124,
-    "stock": 25,
-  },
-  {
-    "id": "2",
-    "name": "Organic Wheatgrass",
-    "price": 14.99,
-    "image": "/products/2.jpg",
-    "category": "Superfoods",
-    "rating": 4.7,
-    "reviews": 98,
-    "stock": 30,
-  },
-  {
-    "id": "3",
-    "name": "Red Dehydrated Onion Flakes",
-    "price": 9.49,
-    "image": "/products/3.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.6,
-    "reviews": 87,
-    "stock": 40,
-  },
-  {
-    "id": "4",
-    "name": "Dried Amla Granules",
-    "price": 11.49,
-    "image": "/products/4.jpg",
-    "category": "Fruits",
-    "rating": 4.8,
-    "reviews": 110,
-    "stock": 35,
-  },
-  {
-    "id": "5",
-    "name": "Dried Broccoli (Green Gobhi)",
-    "price": 13.99,
-    "image": "/products/5.jpg",
-    "category": "Vegetables",
-    "rating": 4.5,
-    "reviews": 76,
-    "stock": 28,
-  },
-  {
-    "id": "6",
-    "name": "Dried Kasuri Methi (Fenugreek)",
-    "price": 7.99,
-    "image": "/products/6.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.7,
-    "reviews": 95,
-    "stock": 50,
-  },
-  {
-    "id": "7",
-    "name": "Dried Dill Leaves (Soya Leaves)",
-    "price": 6.99,
-    "image": "/products/7.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.6,
-    "reviews": 81,
-    "stock": 40,
-  },
-  {
-    "id": "8",
-    "name": "Dehydrated Spinach (Palak Leaves)",
-    "price": 5.49,
-    "image": "/products/8.jpg",
-    "category": "Vegetables",
-    "rating": 4.7,
-    "reviews": 96,
-    "stock": 45,
-  },
-  {
-    "id": "9",
-    "name": "Dehydrated Bittergourd (Karela Flakes)",
-    "price": 4.99,
-    "image": "/products/9.jpg",
-    "category": "Vegetables",
-    "rating": 4.5,
-    "reviews": 78,
-    "stock": 60,
-  },
-  {
-    "id": "10",
-    "name": "Dehydrated Carrot (Cubes/Flakes)",
-    "price": 3.99,
-    "image": "/products/11.jpg",
-    "category": "Vegetables",
-    "rating": 4.8,
-    "reviews": 112,
-    "stock": 85,
-  },
-  {
-    "id": "11",
-    "name": "Dehydrated Ginger Flakes",
-    "price": 6.49,
-    "image": "/products/12.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.9,
-    "reviews": 145,
-    "stock": 50,
-  },
-  {
-    "id": "12",
-    "name": "Dehydrated Ginger Flakes",
-    "price": 4.29,
-    "image": "/products/12.jpg",
-    "category": "Fruits",
-    "rating": 4.6,
-    "reviews": 88,
-    "stock": 70,
-    
-  },
-  {
-    "id": "13",
-    "name": "Dehydrated Raw Banana Flakes",
-    "price": 19.99,
-    "image": "/products/13.jpg",
-    "category": "Vegetables",
-    "rating": 4.9,
-    "reviews": 42,
-    "stock": 15,
-   
-  },
-  {
-    "id": "14",
-    "name": "Dehydrated Gengeroot Flakes",
-    "price": 3.99,
-    "image": "/products/14.jpg",
-    "category": "Herbs & Spices",
-    "rating": 4.5,
-    "reviews": 92,
-    "stock": 55,
-    
-  },
-  {
-    "id": "15",
-    "name": "Dehydrated Green Coriander Leaf ",
-    "price": 5.99,
-    "image": "/products/15.jpg",
-    "category": "Herbs & Floral",
-    "rating": 4.8,
-    "reviews": 120,
-    "stock": 35,
-    
-  },
-  {
-    "id": "16",
-    "name": "Dehydrated Rose Petals ",
-    "price": 4.49,
-    "image": "/products/16.jpg",
-    "category": "Herbs & Tea",
-    "rating": 4.4,
-    "reviews": 68,
-    "stock": 42,
-    
-  },
-  {
-    "id": "17",
-    "name": "Dehydrated Lemon Leaf",
-    "price": 8.99,
-    "image": "/products/17.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.9,
-    "reviews": 150,
-    "stock": 30,
-    
-  },
-  {
-    "id": "18",
-    "name": "Dried Fresh Raw Root Turmeric",
-    "price": 4.99,
-    "image": "/products/18.jpg",
-    "category": "Spices & Seasonings",
-    "rating": 4.6,
-    "reviews": 105,
-    "stock": 60,
-    
-  },
-  {
-    "id": "19",
-    "name": "Dehydrated Green Chilli Flakes",
-    "price": 12.49,
-    "image": "/products/19.jpg",
-    "category": "Vegetables",
-    "rating": 4.8,
-    "reviews": 33,
-    "stock": 24,
-    
-  }
-]
 
 // Create a client component that uses useSearchParams
 function SearchContent() {
@@ -230,6 +28,8 @@ function SearchContent() {
   const [sortBy, setSortBy] = useState('featured')
   
   const [searchResults, setSearchResults] = useState<Product[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   
   const sortOptions = [
     { value: 'featured', label: 'Featured' },
@@ -239,35 +39,84 @@ function SearchContent() {
     { value: 'rating', label: 'Highest Rated' }
   ]
   
+  // Update the fetchSearchResults function in the useEffect
   useEffect(() => {
-    if (query) {
-      const results = allProducts.filter(product => 
-        product.name.toLowerCase().includes(query.toLowerCase()) ||
-        product.category.toLowerCase().includes(query.toLowerCase())
-      )
-      setSearchResults(results)
-    } else {
-      setSearchResults([])
+    const fetchSearchResults = async () => {
+      if (!query) {
+        setSearchResults([])
+        return
+      }
+      
+      setIsLoading(true)
+      setError(null)
+      
+      try {
+        // Use the search query parameter directly in the API call
+        const response = await fetch(`/api/products?q=${encodeURIComponent(query)}`)
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch products')
+        }
+        
+        const data = await response.json()
+        setSearchResults(data.products)
+      } catch (err) {
+        console.error('Error searching products:', err)
+        setError('Failed to search products. Please try again.')
+      } finally {
+        setIsLoading(false)
+      }
     }
+    
+    fetchSearchResults()
   }, [query])
   
   // Sort search results
   const sortedResults = [...searchResults].sort((a, b) => {
     switch (sortBy) {
       case 'newest':
-        return a.new ? -1 : b.new ? 1 : 0
+        // Handle case when createdAt might be undefined
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
       case 'price-low':
-        return a.price - b.price
+        return a.price - b.price;
       case 'price-high':
-        return b.price - a.price
+        return b.price - a.price;
       case 'rating':
-        return b.rating - a.rating
-      default:
-        return a.bestseller ? -1 : b.bestseller ? 1 : 0
+        return b.rating - a.rating;
+      default: // 'featured'
+        if (a.bestseller && !b.bestseller) return -1;
+        if (!a.bestseller && b.bestseller) return 1;
+        if (a.featured && !b.featured) return -1;
+        if (!a.featured && b.featured) return 1;
+        return 0;
     }
   })
   
-  const categories = ['Fruits', 'Vegetables', 'Snacks', 'Berries', 'Exotics', 'Nuts']
+  const categories = ['Fruits', 'Vegetables', 'Spices & Herbs', 'Superfoods', 'Herbs & Floral', 'Herbs & Tea']
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-10">
+        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
+  
+  if (error) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-red-500 mb-4">{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    )
+  }
   
   return (
     <>

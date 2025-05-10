@@ -3,56 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import ProductCard from '@/components/products/ProductCard'
-
-// This would normally come from your data source
-const featuredProducts = [
-  {
-    id: '1',
-    name: 'Dried Amla',
-    price: 12.99,
-    image: '/products/1.jpg', // Static image path
-    category: 'Fruits',
-    rating: 4.8,
-    reviews: 124,
-    stock: 25,
-    bestseller: true
-  },
-  {
-    id: '2',
-    name: 'Organic Wheatgrass',
-    price: 14.99,
-    image: '/products/2.jpg', // Static image path
-    category: 'Vegetables',
-    rating: 4.7,
-    reviews: 89,
-    stock: 18,
-    bestseller: false
-  },
-  {
-    id: '3',
-    name: 'Red Dehydated Onion Flakes',
-    price: 9.99,
-    image: '/products/3.jpg', // Static image path
-    category: 'Snacks',
-    rating: 4.9,
-    reviews: 56,
-    stock: 32,
-    bestseller: true
-  },
-  {
-    id: '4',
-    name: 'Dried Amla Granules',
-    price: 17.99,
-    image: '/products/4.jpg', // Static image path
-    category: 'Berries',
-    rating: 4.6,
-    reviews: 72,
-    stock: 15,
-    bestseller: false
-  },
-]
-
-const categories = ['All', 'Fruits', 'Vegetables', 'Snacks', 'Berries', 'Exotics']
+import { Product } from '@/types' // Import the Product type
 
 export default function TopProductsSlider() {
   const [activeCategory, setActiveCategory] = useState('All')
@@ -62,13 +13,40 @@ export default function TopProductsSlider() {
   const [isMobile, setIsMobile] = useState(false)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(true)
+  const [products, setProducts] = useState<Product[]>([]) // Add type annotation
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null) // Add type annotation
   const sliderRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const primaryColor = '#f59e0b' // Amber-500 color
   
+  // Fetch bestseller products from API
+  useEffect(() => {
+    const fetchBestsellers = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/products?bestseller=true&limit=8');
+        if (!response.ok) {
+          throw new Error('Failed to fetch bestseller products');
+        }
+        const data = await response.json();
+        setProducts(data.products);
+      } catch (err) {
+        console.error('Error fetching bestseller products:', err);
+        setError('Failed to load bestseller products');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBestsellers();
+  }, []);
+  
+  const categories = ['All', ...new Set(products.map(product => product.category))];
+  
   const filteredProducts = activeCategory === 'All' 
-    ? featuredProducts 
-    : featuredProducts.filter(product => product.category === activeCategory)
+    ? products 
+    : products.filter(product => product.category === activeCategory)
   
   // Determine how many products to show per slide based on screen size
   const [productsPerSlide, setProductsPerSlide] = useState(4)
@@ -101,6 +79,8 @@ export default function TopProductsSlider() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
   
+  // Rest of your component remains the same...
+  
   // Function to check if scroll buttons should be shown
   const checkScrollButtons = () => {
     if (!scrollContainerRef.current) return
@@ -110,61 +90,36 @@ export default function TopProductsSlider() {
     setShowRightButton(scrollLeft < scrollWidth - clientWidth - 10) // 10px buffer
   }
   
-  // Add scroll event listener for mobile
+  // Add scroll event listener
   useEffect(() => {
     const container = scrollContainerRef.current
-    if (container && isMobile) {
+    if (container) {
       container.addEventListener('scroll', checkScrollButtons)
       // Initial check
       checkScrollButtons()
       
       return () => container.removeEventListener('scroll', checkScrollButtons)
     }
-  }, [isMobile])
+  }, [scrollContainerRef.current])
   
-  // Calculate total number of slides needed
-  const totalSlides = Math.ceil(filteredProducts.length / productsPerSlide)
-  
-  // Handle automatic slide transitions for desktop
-  useEffect(() => {
-    if (isMobile) return; // Don't auto-rotate on mobile
-    
-    const interval = setInterval(() => {
-      if (totalSlides > 1) {
-        setCurrentSlide((prev) => (prev + 1) % totalSlides)
-      }
-    }, 6000)
-    
-    return () => clearInterval(interval)
-  }, [totalSlides, isMobile])
-  
-  // Reset current slide when changing categories
-  useEffect(() => {
-    setCurrentSlide(0)
-    
-    // Reset scroll position on category change for mobile
+  // Scroll functions
+  const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollLeft = 0;
-      checkScrollButtons();
+      const container = scrollContainerRef.current
+      const cardWidth = container.querySelector('div')?.clientWidth || 0
+      container.scrollBy({ left: -cardWidth * (isMobile ? 1 : 2), behavior: 'smooth' })
     }
-  }, [activeCategory])
-  
-  // Function to handle manual navigation
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index)
   }
   
-  // Function to go to next slide
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides)
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current
+      const cardWidth = container.querySelector('div')?.clientWidth || 0
+      container.scrollBy({ left: cardWidth * (isMobile ? 1 : 2), behavior: 'smooth' })
+    }
   }
   
-  // Function to go to previous slide
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1))
-  }
-  
-  // Touch event handlers for mobile swipe
+  // Touch handlers for mobile swipe
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX)
   }
@@ -174,69 +129,71 @@ export default function TopProductsSlider() {
   }
   
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 100) {
+    if (touchStart - touchEnd > 150) {
       // Swipe left
-      nextSlide()
+      scrollRight()
     }
     
-    if (touchStart - touchEnd < -100) {
+    if (touchStart - touchEnd < -150) {
       // Swipe right
-      prevSlide()
+      scrollLeft()
     }
   }
   
-  // Apply touch events only on desktop slider
-  const touchProps = !isMobile ? {
-    onTouchStart: handleTouchStart,
-    onTouchMove: handleTouchMove,
-    onTouchEnd: handleTouchEnd
-  } : {}
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 md:px-6 text-center">
+          <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading bestsellers...</p>
+        </div>
+      </section>
+    )
+  }
+  
+  if (error) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 md:px-6 text-center">
+          <p className="text-red-500">{error}</p>
+        </div>
+      </section>
+    )
+  }
+  
+  if (filteredProducts.length === 0) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 md:px-6">
+          <h2 className="text-3xl md:text-4xl font-playfair text-center mb-4">Bestsellers</h2>
+          <p className="text-gray-600 text-center max-w-2xl mx-auto mb-12">
+            Our most popular products that customers love.
+          </p>
+          <p className="text-center text-gray-500">No bestseller products found in this category.</p>
+        </div>
+      </section>
+    )
+  }
   
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-          <div className="text-center md:text-left mb-4 md:mb-0">
-            <h2 className="text-3xl md:text-4xl font-playfair mb-2">Top Rated Products</h2>
-            <p className="text-gray-600 font-serif">Our most loved products, backed by customer reviews.</p>
-          </div>
-          
-          <div className="hidden md:flex space-x-2">
-            {!isMobile && totalSlides > 1 && (
-              <>
-                <button 
-                  onClick={prevSlide}
-                  className="p-2 rounded-full border border-amber-300 hover:bg-amber-50 transition-colors"
-                  aria-label="Previous slide"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-600">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                  </svg>
-                </button>
-                <button 
-                  onClick={nextSlide}
-                  className="p-2 rounded-full border border-amber-300 hover:bg-amber-50 transition-colors"
-                  aria-label="Next slide"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-amber-600">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                  </svg>
-                </button>
-              </>
-            )}
-          </div>
-        </div>
+        <h2 className="text-3xl md:text-4xl font-playfair text-center mb-4">Bestsellers</h2>
+        <p className="text-gray-600 text-center max-w-2xl mx-auto mb-12">
+          Our most popular products that customers love.
+        </p>
         
-        <div className="flex justify-center mb-10">
-          <div className="inline-flex flex-wrap justify-center gap-2 p-1 bg-gray-100 rounded-full">
+        {/* Category filters */}
+        <div className="flex justify-center mb-8 overflow-x-auto pb-2">
+          <div className="flex space-x-2">
             {categories.map(category => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  activeCategory === category 
-                    ? 'bg-amber-500 text-white' 
-                    : 'text-gray-700 hover:bg-gray-200'
+                className={`px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors ${
+                  activeCategory === category
+                    ? 'bg-amber-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
                 {category}
@@ -245,144 +202,57 @@ export default function TopProductsSlider() {
           </div>
         </div>
         
-        <div className="relative">
-          {/* Mobile Products Slider (exactly like NewProducts) */}
-          {isMobile ? (
-            <>
-              {/* Left shadow gradient for scroll indication */}
-              {showLeftButton && (
-                <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-              )}
-              
-              {/* Right shadow gradient for scroll indication */}
-              {showRightButton && (
-                <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-              )}
-              
-              <div 
-                ref={scrollContainerRef}
-                className="flex overflow-x-auto gap-6 pb-4 hide-scrollbar scroll-smooth"
-                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              >
-                {filteredProducts.map(product => (
-                  <div key={product.id} className="min-w-[280px] max-w-[280px] flex-shrink-0">
-                    <ProductCard product={product} />
-                  </div>
-                ))}
-              </div>
-              
-              {/* Mobile scroll indicators */}
-              <div className="flex justify-center mt-4 md:hidden">
-                <div className="flex space-x-1">
-                  {filteredProducts.map((_, index) => (
-                    <button
-                      key={index}
-                      className="w-2 h-2 rounded-full bg-gray-300 hover:bg-amber-600 focus:bg-amber-600"
-                      aria-label={`Scroll to product ${index + 1}`}
-                      onClick={() => {
-                        if (scrollContainerRef.current) {
-                          const cardWidth = 280 + 24; // card width + gap
-                          scrollContainerRef.current.scrollTo({
-                            left: index * cardWidth,
-                            behavior: 'smooth'
-                          });
-                        }
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : (
-            /* Desktop Products Slider (original behavior) */
-            <>
-              <div 
-                className="overflow-hidden"
-                ref={sliderRef}
-                {...touchProps}
-              >
-                <div 
-                  className="flex transition-transform duration-500 ease-in-out"
-                  style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                >
-                  {Array.from({ length: totalSlides }).map((_, slideIndex) => (
-                    <div 
-                      key={slideIndex} 
-                      className="min-w-full flex flex-nowrap gap-6"
-                    >
-                      {filteredProducts
-                        .slice(slideIndex * productsPerSlide, (slideIndex + 1) * productsPerSlide)
-                        .map(product => (
-                          <div key={product.id} className={`flex-1 min-w-0`}>
-                            <ProductCard product={product} />
-                          </div>
-                        ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Navigation arrows - only show if there are multiple slides */}
-              {totalSlides > 1 && (
-                <>
-                  <button 
-                    onClick={prevSlide}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 text-amber-600 p-2 rounded-full transition-all duration-300 shadow-md"
-                    aria-label="Previous slide"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
-                  </button>
-                  
-                  <button 
-                    onClick={nextSlide}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white/90 text-amber-600 p-2 rounded-full transition-all duration-300 shadow-md"
-                    aria-label="Next slide"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                    </svg>
-                  </button>
-                </>
-              )}
-              
-              {/* Indicators - only show if there are multiple slides */}
-              {totalSlides > 1 && (
-                <div className="flex justify-center mt-8 space-x-2">
-                  {Array.from({ length: totalSlides }).map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToSlide(index)}
-                      className={`h-2.5 rounded-full transition-all duration-300 ${
-                        index === currentSlide ? 'w-8' : 'w-2.5'
-                      }`}
-                      style={{ 
-                        backgroundColor: index === currentSlide ? primaryColor : 'rgba(0, 0, 0, 0.2)',
-                      }}
-                      onMouseOver={(e) => {
-                        if (index !== currentSlide) {
-                          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (index !== currentSlide) {
-                          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
-                        }
-                      }}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
+        {/* Product slider */}
+        <div className="relative" ref={sliderRef}>
+          {/* Left scroll button */}
+          {showLeftButton && (
+            <button
+              onClick={scrollLeft}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 md:p-3 focus:outline-none"
+              aria-label="Scroll left"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-700">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
           )}
+          
+          {/* Right scroll button */}
+          {showRightButton && (
+            <button
+              onClick={scrollRight}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full shadow-md p-2 md:p-3 focus:outline-none"
+              aria-label="Scroll right"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-700">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+          )}
+          
+          {/* Products container */}
+          <div 
+            className="flex overflow-x-auto scrollbar-hide scroll-smooth pb-4 -mx-4 px-4"
+            ref={scrollContainerRef}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {filteredProducts.map(product => (
+              <div 
+                key={product.id} 
+                className="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-4"
+              >
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
         </div>
         
-        <div className="text-center mt-12">
+        <div className="text-center mt-8">
           <Link 
             href="/products" 
-            className="inline-flex items-center px-6 py-3 border-2 border-amber-500 text-amber-600 hover:bg-amber-500 hover:text-white rounded-full transition-colors font-medium"
+            className="inline-flex items-center px-6 py-3 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
           >
             View All Products
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-2">

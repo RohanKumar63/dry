@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@prisma/client": "^6.6.0",
+    "bcrypt": "^5.1.1",
+    "feather-icons": "^4.29.2",
     "framer-motion": "^12.7.1",
+    "lottie-react": "^2.4.1",
     "mongodb": "^6.15.0",
     "next": "15.2.2",
     "react": "^19.0.0",
@@ -20,11 +24,14 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
+    "prisma": "^6.6.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

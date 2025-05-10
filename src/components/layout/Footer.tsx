@@ -98,8 +98,8 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <FooterLink href="/shipping">Shipping & Returns</FooterLink>
               <FooterLink href="/warranty">Product Guarantee</FooterLink>
-              <FooterLink href="/bulk-orders">Bulk Orders</FooterLink>
-              <FooterLink href="/privacy">Privacy Policy</FooterLink>
+              <FooterLink href="/bulk-order">Bulk Orders</FooterLink>
+              <FooterLink href="/refund-policy">Refund Policy</FooterLink>
               <FooterLink href="/terms">Terms of Service</FooterLink>
             </ul>
           </div>

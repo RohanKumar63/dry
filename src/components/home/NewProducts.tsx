@@ -1,85 +1,39 @@
 'use client'
 
 import { useRef, useState, useEffect } from 'react'
-// Commented out unused import
-// import Image from 'next/image'
 import Link from 'next/link'
 import ProductCard from '@/components/products/ProductCard'
-
-// Product data
-const newArrivals = [
-  {
-    id: '6',
-    name: 'Dried Kasuri Methi (Fenugreek)',
-    price: 18.99,
-    image: '/products/6.jpg',
-    category: 'Berries',
-    rating: 4.9,
-    reviews: 32,
-    stock: 20,
-    new: true
-  },
-  {
-    id: '7',
-    name: 'Dried Dill Leaves (Soya Leaves)',
-    price: 8.99,
-    image: '/products/7.jpg',
-    category: 'Snacks',
-    rating: 4.8,
-    reviews: 17,
-    stock: 25,
-    new: true
-  },
-  {
-    id: '8',
-    name: 'Dehydrated Spinach (Palak Leaves)',
-    price: 12.99,
-    image: '/products/8.jpg',
-    category: 'Exotics',
-    rating: 4.7,
-    reviews: 23,
-    stock: 30,
-    new: true
-  },
-  {
-    id: '9',
-    name: 'Dehydrated Bittergourd (Karela Flakes)',
-    price: 9.99,
-    image: '/products/9.jpg',
-    category: 'Fruits',
-    rating: 4.9,
-    reviews: 8,
-    stock: 15,
-    new: true
-  },
-  {
-    id: '10',
-    name: 'Dried Amla',
-    price: 11.99,
-    image: '/products/1.jpg',
-    category: 'Vegetables',
-    rating: 5.0,
-    reviews: 12,
-    stock: 18,
-    new: true
-  },
-  {
-    id: '11',
-    name: 'Dehydrated Carrot (Cubes/Flakes)',
-    price: 15.99,
-    image: '/products/11.jpg',
-    category: 'Snacks',
-    rating: 4.6,
-    reviews: 19,
-    stock: 22,
-    new: true
-  }
-]
+import { Product } from '@/types' // Import the Product type
 
 export default function NewProducts() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(true)
+  const [products, setProducts] = useState<Product[]>([]) // Add type annotation
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null) // Add type annotation
+  
+  // Fetch new arrivals (featured products) from API
+  useEffect(() => {
+    const fetchNewArrivals = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/products?featured=true&limit=6');
+        if (!response.ok) {
+          throw new Error('Failed to fetch new arrivals');
+        }
+        const data = await response.json();
+        setProducts(data.products);
+      } catch (err) {
+        console.error('Error fetching new arrivals:', err);
+        setError('Failed to load new arrivals');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchNewArrivals();
+  }, []);
   
   // Function to check if scroll buttons should be shown
   const checkScrollButtons = () => {
@@ -100,7 +54,7 @@ export default function NewProducts() {
       
       return () => container.removeEventListener('scroll', checkScrollButtons)
     }
-  }, [])
+  }, [scrollContainerRef.current])
   
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -108,6 +62,43 @@ export default function NewProducts() {
       const scrollAmount = direction === 'left' ? -current.clientWidth / 2 : current.clientWidth / 2
       current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
     }
+  }
+  
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 md:px-6 text-center">
+          <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading new arrivals...</p>
+        </div>
+      </section>
+    )
+  }
+  
+  if (error) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 md:px-6 text-center">
+          <p className="text-red-500">{error}</p>
+        </div>
+      </section>
+    )
+  }
+  
+  if (products.length === 0) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div className="text-center md:text-left mb-4 md:mb-0">
+              <h2 className="text-3xl md:text-4xl font-playfair mb-2">New Arrivals</h2>
+              <p className="text-gray-600 font-serif">The latest additions to our collection</p>
+            </div>
+          </div>
+          <p className="text-center text-gray-500">No new arrivals found at the moment.</p>
+        </div>
+      </section>
+    )
   }
   
   return (
@@ -159,7 +150,7 @@ export default function NewProducts() {
             className="flex overflow-x-auto gap-6 pb-4 hide-scrollbar scroll-smooth"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {newArrivals.map(product => (
+            {products.map(product => (
               <div key={product.id} className="min-w-[280px] max-w-[280px] flex-shrink-0">
                 <ProductCard product={product} />
               </div>
@@ -169,7 +160,7 @@ export default function NewProducts() {
           {/* Mobile scroll indicators */}
           <div className="flex justify-center mt-4 md:hidden">
             <div className="flex space-x-1">
-              {newArrivals.map((_, index) => (
+              {products.map((_, index) => (
                 <button
                   key={index}
                   className="w-2 h-2 rounded-full bg-gray-300 hover:bg-amber-600 focus:bg-amber-600"

@@ -3,218 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ProductGrid from '@/components/products/ProductGrid'
-
-const allProducts = [
-  {
-    "id": "1",
-    "name": "Dried Amla",
-    "price": 12.99,
-    "image": "/products/1.jpg",
-    "category": "Fruits",
-    "rating": 4.8,
-    "reviews": 124,
-    "stock": 25,
-    "bestseller": true
-  },
-  {
-    "id": "2",
-    "name": "Organic Wheatgrass",
-    "price": 14.99,
-    "image": "/products/2.jpg",
-    "category": "Superfoods",
-    "rating": 4.7,
-    "reviews": 98,
-    "stock": 30,
-    "bestseller": true
-  },
-  {
-    "id": "3",
-    "name": "Red Dehydrated Onion Flakes",
-    "price": 9.49,
-    "image": "/products/3.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.6,
-    "reviews": 87,
-    "stock": 40,
-    "bestseller": false
-  },
-  {
-    "id": "4",
-    "name": "Dried Amla Granules",
-    "price": 11.49,
-    "image": "/products/4.jpg",
-    "category": "Fruits",
-    "rating": 4.8,
-    "reviews": 110,
-    "stock": 35,
-    "bestseller": true
-  },
-  {
-    "id": "5",
-    "name": "Dried Broccoli (Green Gobhi)",
-    "price": 13.99,
-    "image": "/products/5.jpg",
-    "category": "Vegetables",
-    "rating": 4.5,
-    "reviews": 76,
-    "stock": 28,
-    "bestseller": false
-  },
-  {
-    "id": "6",
-    "name": "Dried Kasuri Methi (Fenugreek)",
-    "price": 7.99,
-    "image": "/products/6.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.7,
-    "reviews": 95,
-    "stock": 50,
-    "bestseller": true
-  },
-  {
-    "id": "7",
-    "name": "Dried Dill Leaves (Soya Leaves)",
-    "price": 6.99,
-    "image": "/products/7.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.6,
-    "reviews": 81,
-    "stock": 40,
-    "bestseller": false
-  },
-  {
-    "id": "8",
-    "name": "Dehydrated Spinach (Palak Leaves)",
-    "price": 5.49,
-    "image": "/products/8.jpg",
-    "category": "Vegetables",
-    "rating": 4.7,
-    "reviews": 96,
-    "stock": 45,
-    "bestseller": false
-  },
-  {
-    "id": "9",
-    "name": "Dehydrated Bittergourd (Karela Flakes)",
-    "price": 4.99,
-    "image": "/products/9.jpg",
-    "category": "Vegetables",
-    "rating": 4.5,
-    "reviews": 78,
-    "stock": 60,
-    "bestseller": false
-  },
-  {
-    "id": "10",
-    "name": "Dehydrated Carrot (Cubes/Flakes)",
-    "price": 3.99,
-    "image": "/products/11.jpg",
-    "category": "Vegetables",
-    "rating": 4.8,
-    "reviews": 112,
-    "stock": 85,
-    "bestseller": true
-  },
-  {
-    "id": "11",
-    "name": "Dehydrated Ginger Flakes",
-    "price": 6.49,
-    "image": "/products/12.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.9,
-    "reviews": 145,
-    "stock": 50,
-    "bestseller": true
-  },
-  {
-    "id": "12",
-    "name": "Dehydrated Ginger Flakes",
-    "price": 4.29,
-    "image": "/products/12.jpg",
-    "category": "Fruits",
-    "rating": 4.6,
-    "reviews": 88,
-    "stock": 70,
-    "bestseller": false
-  },
-  {
-    "id": "13",
-    "name": "Dehydrated Raw Banana Flakes",
-    "price": 19.99,
-    "image": "/products/13.jpg",
-    "category": "Vegetables",
-    "rating": 4.9,
-    "reviews": 42,
-    "stock": 15,
-    "bestseller": false
-  },
-  {
-    "id": "14",
-    "name": "Dehydrated Gengeroot Flakes",
-    "price": 3.99,
-    "image": "/products/14.jpg",
-    "category": "Herbs & Spices",
-    "rating": 4.5,
-    "reviews": 92,
-    "stock": 55,
-    "bestseller": false
-  },
-  {
-    "id": "15",
-    "name": "Dehydrated Green Coriander Leaf ",
-    "price": 5.99,
-    "image": "/products/15.jpg",
-    "category": "Herbs & Floral",
-    "rating": 4.8,
-    "reviews": 120,
-    "stock": 35,
-    "bestseller": true
-  },
-  {
-    "id": "16",
-    "name": "Dehydrated Rose Petals ",
-    "price": 4.49,
-    "image": "/products/16.jpg",
-    "category": "Herbs & Tea",
-    "rating": 4.4,
-    "reviews": 68,
-    "stock": 42,
-    "bestseller": false
-  },
-  {
-    "id": "17",
-    "name": "Dehydrated Lemon Leaf",
-    "price": 8.99,
-    "image": "/products/17.jpg",
-    "category": "Spices & Herbs",
-    "rating": 4.9,
-    "reviews": 150,
-    "stock": 30,
-    "bestseller": true
-  },
-  {
-    "id": "18",
-    "name": "Dried Fresh Raw Root Turmeric",
-    "price": 4.99,
-    "image": "/products/18.jpg",
-    "category": "Spices & Seasonings",
-    "rating": 4.6,
-    "reviews": 105,
-    "stock": 60,
-    "bestseller": true
-  },
-  {
-    "id": "19",
-    "name": "Dehydrated Green Chilli Flakes",
-    "price": 12.49,
-    "image": "/products/19.jpg",
-    "category": "Vegetables",
-    "rating": 4.8,
-    "reviews": 33,
-    "stock": 24,
-    "bestseller": false
-  }
-]
+import { Product } from '@/types' // Import the Product type
 
 const categories = ['All', 'Fruits', 'Vegetables', 'Spices & Herbs', 'Superfoods', 'Herbs & Floral', 'Herbs & Tea', 'Spices & Seasonings']
 const sortOptions = [
@@ -231,8 +20,12 @@ function ProductsContent() {
   
   const [activeCategory, setActiveCategory] = useState(categoryParam || 'All')
   const [sortBy, setSortBy] = useState('featured')
-  const [priceRange, setPriceRange] = useState([0, 25])
+  // Change the initial price range state to have a maximum of 10000
+  const [priceRange, setPriceRange] = useState([0, 10000])
   const [filterOpen, setFilterOpen] = useState(false)
+  const [products, setProducts] = useState<Product[]>([]) // Add type annotation
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null) // Add type annotation
   
   useEffect(() => {
     if (categoryParam) {
@@ -240,12 +33,41 @@ function ProductsContent() {
     }
   }, [categoryParam])
   
-  const filteredProducts = allProducts.filter(product => {
-    const categoryMatch = activeCategory === 'All' || product.category === activeCategory
-    const priceMatch = product.price >= priceRange[0] && product.price <= priceRange[1]
-    return categoryMatch && priceMatch
-  })
+  // Fetch products from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      try {
+        // Build the API URL with query parameters
+        let url = '/api/products?';
+        if (activeCategory !== 'All') {
+          url += `category=${encodeURIComponent(activeCategory)}&`;
+        }
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error('Failed to fetch products');
+        }
+        const data = await response.json();
+        setProducts(data.products);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [activeCategory]);
   
+  // Filter products by price range
+  const filteredProducts = products.filter(product => {
+    const priceMatch = product.price >= priceRange[0] && product.price <= priceRange[1];
+    return priceMatch;
+  });
+  
+  // Sort products
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
@@ -260,6 +82,28 @@ function ProductsContent() {
         return b.rating - a.rating
     }
   })
+  
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-10">
+        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-red-500 mb-4">{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
   
   return (
     <div className="flex flex-col lg:flex-row gap-8">
@@ -288,17 +132,18 @@ function ProductsContent() {
             </ul>
           </div>
           
+          // In the desktop filter section
           <div className="mb-6">
             <h3 className="font-medium mb-3">Price Range</h3>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-gray-600">${priceRange[0]}</span>
-              <span className="text-sm text-gray-600">${priceRange[1]}</span>
+              <span className="text-sm text-gray-600">₹{priceRange[0]}</span>
+              <span className="text-sm text-gray-600">₹{priceRange[1]}</span>
             </div>
             <input
               type="range"
               min="0"
-              max="25"
-              step="1"
+              max="10000"
+              step="100"
               value={priceRange[1]}
               onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
               className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
@@ -365,14 +210,14 @@ function ProductsContent() {
             <div className="mb-4">
               <h3 className="font-medium mb-3">Price Range</h3>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-600">${priceRange[0]}</span>
-                <span className="text-sm text-gray-600">${priceRange[1]}</span>
+                <span className="text-sm text-gray-600">₹{priceRange[0]}</span>
+                <span className="text-sm text-gray-600">₹{priceRange[1]}</span>
               </div>
               <input
                 type="range"
                 min="0"
-                max="25"
-                step="1"
+                max="10000"
+                step="100"
                 value={priceRange[1]}
                 onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-600"

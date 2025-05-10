@@ -190,8 +190,7 @@ export default function ContactPage() {
                   <div className="ml-4">
                     <h3 className="text-lg font-medium text-gray-900">Business Hours</h3>
                     <div className="mt-1 space-y-1">
-                      <p className="text-gray-600">Monday - Friday: 9:00 AM - 6:00 PM</p>
-                      <p className="text-gray-600">Saturday: 10:00 AM - 4:00 PM</p>
+                      <p className="text-gray-600">Monday - Saturday: 10:00 AM - 7:00 PM</p>
                       <p className="text-gray-600">Sunday: Closed</p>
                     </div>
                   </div>

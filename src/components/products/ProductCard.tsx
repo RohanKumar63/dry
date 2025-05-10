@@ -20,6 +20,16 @@ export default function ProductCard({ product }: { product: Product }) {
     window.open(whatsappUrl, '_blank');
   }
   
+  // Get the display price (either base price or "Starting at" for variants)
+  const getDisplayPrice = () => {
+    if (product.sizeVariants && product.sizeVariants.length > 0) {
+      // Find the minimum price among variants
+      const minPrice = Math.min(...product.sizeVariants.map(v => v.price));
+      return `Starting at ₹${minPrice}`;
+    }
+    return `₹${product.price.toFixed(2)}`;
+  };
+  
   return (
     <div 
       className="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
@@ -28,12 +38,18 @@ export default function ProductCard({ product }: { product: Product }) {
     >
       <Link href={`/products/${product.id}`} className="block">
         <div className="relative h-64 bg-gray-100">
-          <Image 
-            src={product.image} 
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          {product.image ? (
+            <Image 
+              src={product.image} 
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-200">
+              <span className="text-gray-400">No image</span>
+            </div>
+          )}
           
           {product.bestseller && (
             <span className="absolute top-2 left-2 bg-amber-600 text-white text-xs font-bold px-2 py-1 rounded-md">
@@ -73,7 +89,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
           
           <div className="flex items-center justify-between">
-            <span className="text-lg font-medium text-gray-900">${product.price.toFixed(2)}</span>
+            <span className="text-lg font-medium text-gray-900">{getDisplayPrice()}</span>
           </div>
         </div>
       </Link>
