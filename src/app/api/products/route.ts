@@ -34,9 +34,9 @@ export async function GET(request: Request) {
         }
       : baseWhere;
 
-    // Extend timeout to 20 seconds
+    // Extend timeout to 30 seconds
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Query timeout')), 20000);
+      setTimeout(() => reject(new Error('Query timeout')), 30000);
     });
 
     // First get just the products without variants

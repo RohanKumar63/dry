@@ -33,16 +33,22 @@ export default function TopProductsSlider() {
         // Add cache busting to prevent stale responses
         const cacheBuster = new Date().getTime();
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8-second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // Increase to 15-second timeout
         
         const response = await fetch(`/api/products?bestseller=true&limit=8&cacheBust=${cacheBuster}`, {
-          signal: controller.signal
+          signal: controller.signal,
+          // Add cache control headers
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
         });
         
         clearTimeout(timeoutId);
         
         if (!response.ok) {
-          throw new Error('Failed to fetch bestseller products');
+          throw new Error(`Failed to fetch bestseller products: ${response.status}`);
         }
         
         const data = await response.json();
