@@ -2,8 +2,9 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import ProductGrid from '@/components/products/ProductGrid'
-import { Product } from '@/types' // Import the Product type
+import { Product } from '@/types'
+import React from 'react'
+import ProductCard from '@/components/products/ProductCard'
 
 const categories = ['All', 'Fruits', 'Vegetables', 'Spices & Herbs', 'Superfoods', 'Herbs & Floral', 'Herbs & Tea', 'Spices & Seasonings']
 const sortOptions = [
@@ -20,7 +21,7 @@ function ProductsContent() {
   
   const [activeCategory, setActiveCategory] = useState(categoryParam || 'All')
   const [sortBy, setSortBy] = useState('featured')
-  // Change the initial price range state to have a maximum of 10000
+  
   const [priceRange, setPriceRange] = useState([0, 10000])
   const [filterOpen, setFilterOpen] = useState(false)
   const [products, setProducts] = useState<Product[]>([]) // Add type annotation
@@ -132,7 +133,6 @@ function ProductsContent() {
             </ul>
           </div>
           
-          // In the desktop filter section
           <div className="mb-6">
             <h3 className="font-medium mb-3">Price Range</h3>
             <div className="flex items-center justify-between mb-2">
@@ -235,7 +235,11 @@ function ProductsContent() {
         
         <p className="text-sm text-gray-600 mb-6">Showing {sortedProducts.length} products</p>
         
-        <ProductGrid products={sortedProducts} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {sortedProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
       </div>
     </div>
   )

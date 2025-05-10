@@ -1,7 +1,6 @@
-'use client';
+"use client"
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ProductList from '@/components/admin/ProductList';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -10,7 +9,6 @@ export default function NewArrivalsPage() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -20,7 +18,7 @@ export default function NewArrivalsPage() {
         throw new Error('Failed to fetch featured products');
       }
       const data = await response.json();
-      console.log('Featured products response:', data); // Add this debug line
+      console.log('Featured products response:', data);
       setProducts(data.products);
     } catch (err) {
       console.error('Error fetching featured products:', err);

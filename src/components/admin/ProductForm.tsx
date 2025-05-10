@@ -4,6 +4,7 @@ import { useState } from 'react';
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import ImageUploader from './ImageUploader';
+import Image from 'next/image';
 
 // Update the Variant type to match your schema
 type Variant = {
@@ -13,47 +14,68 @@ type Variant = {
 };
 
 type ProductFormProps = {
-  initialData?: any;
+  initialData?: {
+    id?: string;
+    name?: string;
+    description?: string;
+    longDescription?: string;
+    price?: number;
+    salePrice?: string;
+    category?: string;
+    stock?: number;
+    bestseller?: boolean;
+    featured?: boolean;
+    rating?: number;
+    reviews?: number;
+    image?: string;
+    images?: string[];
+    variants?: Variant[];
+    benefits?: string[];
+    features?: string[];
+    usageSuggestions?: string[];
+    nutritionalInfo?: Record<string, string>;
+    specs?: Record<string, string>;
+  };
   isEditing?: boolean;
 };
 
-export default function ProductForm({ initialData, isEditing = false }: ProductFormProps) {
+export default function ProductForm({ initialData = {}, isEditing = false }: ProductFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [variants, setVariants] = useState<Variant[]>(initialData?.variants || []);
-  const [mainImage, setMainImage] = useState(initialData?.image || '');
-  const [additionalImages, setAdditionalImages] = useState<string[]>(initialData?.images || []);
+  const [variants, setVariants] = useState<Variant[]>(initialData.variants || []);
+  const [mainImage, setMainImage] = useState(initialData.image || '');
+  const [additionalImages, setAdditionalImages] = useState<string[]>(initialData.images || []);
   
   // Add states for additional fields
-  const [benefits, setBenefits] = useState<string[]>(initialData?.benefits || ['']);
-  const [features, setFeatures] = useState<string[]>(initialData?.features || ['']);
-  const [usageSuggestions, setUsageSuggestions] = useState<string[]>(initialData?.usageSuggestions || ['']);
+  const [benefits, setBenefits] = useState<string[]>(initialData.benefits || ['']);
+  const [features, setFeatures] = useState<string[]>(initialData.features || ['']);
+  const [usageSuggestions, setUsageSuggestions] = useState<string[]>(initialData.usageSuggestions || ['']);
   
   // For nutritional info and specs (key-value pairs)
   const [nutritionalInfo, setNutritionalInfo] = useState<{key: string, value: string}[]>(
-    initialData?.nutritionalInfo ? 
+    initialData.nutritionalInfo ? 
       Object.entries(initialData.nutritionalInfo).map(([key, value]) => ({ key, value: value as string })) : 
       [{ key: 'Serving Size', value: '' }]
   );
   
   const [specs, setSpecs] = useState<{key: string, value: string}[]>(
-    initialData?.specs ? 
+    initialData.specs ? 
       Object.entries(initialData.specs).map(([key, value]) => ({ key, value: value as string })) : 
       [{ key: 'Weight', value: '' }]
   );
   
   const [formData, setFormData] = useState({
-    name: initialData?.name || '',
-    description: initialData?.description || '',
-    longDescription: initialData?.longDescription || '',
-    price: initialData?.price || 0,
-    salePrice: initialData?.salePrice || '',
-    category: initialData?.category || '',
-    stock: initialData?.stock || 0,
-    bestseller: initialData?.bestseller || false,
-    featured: initialData?.featured || false,
-    rating: initialData?.rating || 0,
-    reviews: initialData?.reviews || 0,
+    name: initialData.name || '',
+    description: initialData.description || '',
+    longDescription: initialData.longDescription || '',
+    price: initialData.price || 0,
+    salePrice: initialData.salePrice || '',
+    category: initialData.category || '',
+    stock: initialData.stock || 0,
+    bestseller: initialData.bestseller || false,
+    featured: initialData.featured || false,
+    rating: initialData.rating || 0,
+    reviews: initialData.reviews || 0,
   });
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -144,7 +166,7 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
     console.log('Added new variant');
   };
   
-  const updateVariant = (index: number, field: string, value: any) => {
+  const updateVariant = (index: number, field: keyof Variant, value: string | number) => {
     const updatedVariants = [...variants];
     updatedVariants[index] = {
       ...updatedVariants[index],
@@ -205,37 +227,37 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
       // In the handleSubmit function, modify the error handling section:
       
       if (!response.ok) {
-      // Get more detailed error information
-      let errorMessage = `Failed to save product: ${response.status} ${response.statusText}`;
-      try {
-      // First check if there's any content to parse
-      const text = await response.text();
-      if (text && text.trim() !== '') {
-      try {
-      const errorData = JSON.parse(text);
-      // Only log to console if there's actual content in the response
-      if (errorData && Object.keys(errorData).length > 0) {
-      console.error('Server response:', errorData);
-      if (errorData.error) {
-      errorMessage = errorData.error;
-      }
-      }
-      } catch (jsonError) {
-      // If it's not valid JSON, just log the text
-      if (text.trim() !== '') {
-      console.error('Server response (text):', text);
-      }
-      }
-      }
-      } catch (parseError) {
-      // If we can't even get the text, just continue with the default error message
-      console.error('Error parsing response:', parseError);
-      }
-      
-      // Display error to user instead of throwing
-      alert(`Error: ${errorMessage}`);
-      setIsLoading(false);
-      return; // Stop execution here
+        // Get more detailed error information
+        let errorMessage = `Failed to save product: ${response.status} ${response.statusText}`;
+        try {
+          // First check if there's any content to parse
+          const text = await response.text();
+          if (text && text.trim() !== '') {
+            try {
+              const errorData = JSON.parse(text);
+              // Only log to console if there's actual content in the response
+              if (errorData && Object.keys(errorData).length > 0) {
+                console.error('Server response:', errorData);
+                if (errorData.error) {
+                  errorMessage = errorData.error;
+                }
+              }
+            } catch {
+              // If it's not valid JSON, just log the text
+              if (text.trim() !== '') {
+                console.error('Server response (text):', text);
+              }
+            }
+          }
+        } catch (parseError) {
+          // If we can't even get the text, just continue with the default error message
+          console.error('Error parsing response:', parseError);
+        }
+        
+        // Display error to user instead of throwing
+        alert(`Error: ${errorMessage}`);
+        setIsLoading(false);
+        return; // Stop execution here
       }
       
       const savedProduct = await response.json();
@@ -430,10 +452,12 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
               <div className="mt-2 grid grid-cols-4 gap-2">
                 {additionalImages.map((img, idx) => (
                   <div key={idx} className="relative">
-                    <img 
+                    <Image 
                       src={img} 
                       alt={`Product image ${idx}`} 
-                      className="h-16 w-16 object-cover rounded-md"
+                      width={64}
+                      height={64}
+                      className="object-cover rounded-md"
                     />
                     <button
                       type="button"
@@ -748,7 +772,7 @@ export default function ProductForm({ initialData, isEditing = false }: ProductF
             </div>
           </div>
         ) : (
-          <p className="text-gray-500 text-sm">No variants added yet. Click "Add Variant" to create product variations.</p>
+          <p className="text-gray-500 text-sm">No variants added yet. Click &quot;Add Variant&quot; to create product variations.</p>
         )}
       </div>
       

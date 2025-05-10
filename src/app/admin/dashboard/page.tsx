@@ -1,9 +1,8 @@
 // src/app/admin/dashboard/page.tsx
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { requireAdmin } from '@/lib/auth';
 import AdminHeader from '@/components/admin/AdminHeader';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Admin Dashboard | TheNutriDry',
@@ -48,18 +47,18 @@ export default async function AdminDashboardPage() {
         <div className="mt-8">
           <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a
+            <Link
               href="/admin/products/new"
               className="bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-lg text-center transition-colors"
             >
               Add New Product
-            </a>
-            <a
+            </Link>
+            <Link
               href="/admin/products"
               className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg text-center transition-colors"
             >
               Manage Products
-            </a>
+            </Link>
           </div>
         </div>
       </main>

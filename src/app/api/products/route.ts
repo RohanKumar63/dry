@@ -14,7 +14,17 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get('page') || '1');
     const skip = (page - 1) * limit;
 
-    let whereClause: any = {
+    // Replace the any type with a proper type
+    let whereClause: {
+      category?: string;
+      bestseller?: boolean;
+      featured?: boolean;
+      OR?: Array<{
+        name?: { contains: string; mode: 'insensitive' };
+        category?: { contains: string; mode: 'insensitive' };
+        description?: { contains: string; mode: 'insensitive' };
+      }>;
+    } = {
       ...(category ? { category } : {}),
       ...(bestseller ? { bestseller: true } : {}),
       ...(featured ? { featured: true } : {}),

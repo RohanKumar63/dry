@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 'use client'
 
 import React, { useState } from 'react';
@@ -17,12 +18,12 @@ interface FAQItem {
 const faqs: FAQItem[] = [
   {
     question: "How are your fruits and vegetables dried?",
-    answer: "We use a gentle dehydration process that removes water content while preserving nutrients, flavor, and color. Our process doesn't involve any added preservatives, sulfites, or artificial ingredients.",
+    answer: "We use a gentle dehydration process that removes water content while preserving nutrients, flavor, and color. Our process doesn&apos;t involve any added preservatives, sulfites, or artificial ingredients.",
     category: "Products"
   },
   {
     question: "Are your products organic?",
-    answer: "Many of our products are certified organic. Each product page clearly indicates whether that specific item is organic certified. We're committed to expanding our organic offerings over time.",
+    answer: "Many of our products are certified organic. Each product page clearly indicates whether that specific item is organic certified. We&apos;re committed to expanding our organic offerings over time.",
     category: "Products"
   },
   {
@@ -42,7 +43,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "How do I place an order?",
-    answer: "Simply browse our products, add items to your cart, and proceed to checkout. You'll need to create an account or check out as a guest, enter shipping and payment information, and confirm your order.",
+    answer: "Simply browse our products, add items to your cart, and proceed to checkout. You&apos;ll need to create an account or check out as a guest, enter shipping and payment information, and confirm your order.",
     category: "Ordering"
   },
   {
@@ -51,7 +52,7 @@ const faqs: FAQItem[] = [
     category: "Ordering"
   },
   {
-    question: "Can I modify or cancel my order after it's placed?",
+    question: "Can I modify or cancel my order after it&apos;s placed?",
     answer: "You can modify or cancel your order within 2 hours of placing it by contacting our customer service team. After this window, orders are processed for shipping and cannot be modified or canceled.",
     category: "Ordering"
   },
@@ -67,7 +68,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "Do you ship internationally?",
-    answer: "Currently, we only ship within India. We're working on expanding our shipping capabilities to international destinations in the near future.",
+    answer: "Currently, we only ship within India. We&apos;re working on expanding our shipping capabilities to international destinations in the near future.",
     category: "Shipping"
   },
   {
@@ -77,7 +78,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "Can I track my order?",
-    answer: "Yes, once your order ships, you'll receive a confirmation email with tracking information. You can also log into your account on our website to track your order status.",
+    answer: "Yes, once your order ships, you&apos;ll receive a confirmation email with tracking information. You can also log into your account on our website to track your order status.",
     category: "Shipping"
   },
   {
@@ -87,7 +88,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: "What if my product arrives damaged?",
-    answer: "If your product arrives damaged, please contact us within 48 hours of delivery with photos of the damaged items and packaging. We'll arrange a replacement or refund.",
+    answer: "If your product arrives damaged, please contact us within 48 hours of delivery with photos of the damaged items and packaging. We&apos;ll arrange a replacement or refund.",
     category: "Returns & Refunds"
   },
   {

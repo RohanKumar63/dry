@@ -7,18 +7,16 @@ import { Product } from '@/types' // Import the Product type
 
 export default function TopProductsSlider() {
   const [activeCategory, setActiveCategory] = useState('All')
-  const [currentSlide, setCurrentSlide] = useState(0)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(true)
-  const [products, setProducts] = useState<Product[]>([]) // Add type annotation
+  const [products, setProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null) // Add type annotation
+  const [error, setError] = useState<string | null>(null)
   const sliderRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const primaryColor = '#f59e0b' // Amber-500 color
   
   // Fetch bestseller products from API
   useEffect(() => {
@@ -48,23 +46,16 @@ export default function TopProductsSlider() {
     ? products 
     : products.filter(product => product.category === activeCategory)
   
-  // Determine how many products to show per slide based on screen size
-  const [productsPerSlide, setProductsPerSlide] = useState(4)
-  
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth
       if (width < 640) {
-        setProductsPerSlide(1) // Mobile: 1 product per slide
         setIsMobile(true)
       } else if (width < 768) {
-        setProductsPerSlide(2) // Small tablets: 2 products per slide
         setIsMobile(false)
       } else if (width < 1024) {
-        setProductsPerSlide(3) // Large tablets: 3 products per slide
         setIsMobile(false)
       } else {
-        setProductsPerSlide(4) // Desktop: 4 products per slide
         setIsMobile(false)
       }
     }
@@ -78,8 +69,6 @@ export default function TopProductsSlider() {
     // Cleanup
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-  
-  // Rest of your component remains the same...
   
   // Function to check if scroll buttons should be shown
   const checkScrollButtons = () => {
@@ -100,7 +89,7 @@ export default function TopProductsSlider() {
       
       return () => container.removeEventListener('scroll', checkScrollButtons)
     }
-  }, [scrollContainerRef.current])
+  }, []) // Remove scrollContainerRef.current from dependencies
   
   // Scroll functions
   const scrollLeft = () => {

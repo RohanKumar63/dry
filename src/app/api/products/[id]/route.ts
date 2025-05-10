@@ -1,10 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+type RouteContext = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
+export async function GET(
+  request: NextRequest,
+  context: RouteContext
+) {
   try {
-    // Await the params object before accessing its properties
-    const { id } = await params;
+    const { id } = await context.params;
     
     const product = await prisma.product.findUnique({
       where: { id },
@@ -28,10 +36,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(
+  request: NextRequest,
+  context: RouteContext
+) {
   try {
-    // Await the params object
-    const { id } = await params;
+    const { id } = await context.params;
     
     const productData = await request.json();
     const { variants, ...productDetails } = productData;
@@ -40,7 +50,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const product = await prisma.$transaction(
       async (tx) => {
         // Update the product
-        const updatedProduct = await tx.product.update({
+        await tx.product.update({
           where: { id },
           data: productDetails,
         });
@@ -82,19 +92,20 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(
+  request: NextRequest,
+  context: RouteContext
+) {
   try {
-    // Await the params object
-    const { id } = await params;
+    const { id } = await context.params;
+    const data = await request.json();
     
-    const updates = await request.json();
-
-    const product = await prisma.product.update({
+    await prisma.product.update({
       where: { id },
-      data: updates,
+      data,
     });
 
-    return NextResponse.json(product);
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error updating product:', error);
     return NextResponse.json(
@@ -104,10 +115,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  context: RouteContext
+) {
   try {
-    // Await the params object
-    const { id } = await params;
+    const { id } = await context.params;
     
     // Delete the product (variants will be deleted automatically due to cascade)
     await prisma.product.delete({

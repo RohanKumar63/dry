@@ -54,7 +54,7 @@ export default function NewProducts() {
       
       return () => container.removeEventListener('scroll', checkScrollButtons)
     }
-  }, [scrollContainerRef.current])
+  }, []) // Remove scrollContainerRef.current from dependencies
   
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {

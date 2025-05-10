@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import ProductForm from '@/components/admin/ProductForm';
 import AdminHeader from '@/components/admin/AdminHeader';
 
 export default function EditProductPage() {
   const { id } = useParams();
-  const router = useRouter();
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

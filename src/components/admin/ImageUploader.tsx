@@ -73,12 +73,12 @@ export default function ImageUploader({ initialImage, onImageChange }: ImageUplo
           onImageChange(result);
           setIsUploading(false);
           setProgress(100);
-        } catch (err) {
+        } catch {
           setError('Error processing image. Please try again.');
           setIsUploading(false);
         }
       }, 100);
-    } catch (err) {
+    } catch {
       setError('Error processing image. Please try again.');
       setIsUploading(false);
     }

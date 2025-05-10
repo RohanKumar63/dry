@@ -1,7 +1,6 @@
-'use client';
+"use client"
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ProductList from '@/components/admin/ProductList';
 import AdminHeader from '@/components/admin/AdminHeader';
@@ -10,7 +9,6 @@ export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   const fetchProducts = async () => {
     setIsLoading(true);

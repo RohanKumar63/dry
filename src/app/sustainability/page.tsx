@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Sustainability | TheNutriDry',
@@ -13,7 +14,7 @@ export default function SustainabilityPage() {
         <header className="mb-12 text-center">
           <h1 className="text-3xl md:text-5xl font-playfair mb-4">Our Sustainability Commitment</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            At TheNutriDry, sustainability isn't just a buzzword—it's at the core of everything we do. From farm to package, we're committed to practices that protect our planet for future generations.
+            At TheNutriDry, sustainability isn&apos;t just a buzzword—it&apos;s at the core of everything we do. From farm to package, we&apos;re committed to practices that protect our planet for future generations.
           </p>
         </header>
         
@@ -28,7 +29,7 @@ export default function SustainabilityPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
             <div className="text-white max-w-lg p-8">
-              <h2 className="text-3xl font-semibold mb-4">Preserving Nature's Goodness</h2>
+              <h2 className="text-3xl font-semibold mb-4">Preserving Nature&apos;s Goodness</h2>
               <p className="text-lg">Our mission is to provide nutritious dried fruits and vegetables while minimizing our environmental footprint.</p>
             </div>
           </div>
@@ -102,7 +103,7 @@ export default function SustainabilityPage() {
               <h2 className="text-2xl font-playfair mb-4 text-gray-900">Sustainable Packaging</h2>
               <div className="space-y-4 text-gray-700">
                 <p>
-                  We're committed to reducing packaging waste through innovative solutions:
+                  We&apos;re committed to reducing packaging waste through innovative solutions:
                 </p>
                 <ul className="list-disc pl-5 space-y-2">
                   <li>Biodegradable and compostable packaging materials</li>
@@ -182,12 +183,12 @@ export default function SustainabilityPage() {
         <div className="mt-16 bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-8 text-white text-center">
           <h2 className="text-2xl font-semibold mb-4">Join Us in Our Sustainability Journey</h2>
           <p className="mb-6 max-w-2xl mx-auto">Every purchase you make supports our sustainable practices and helps us continue to innovate for a greener future.</p>
-          <a 
+          <Link 
             href="/products" 
             className="inline-block px-6 py-3 bg-white text-green-700 font-medium rounded-md hover:bg-gray-100 transition-colors"
           >
             Shop Our Products
-          </a>
+          </Link>
         </div>
       </div>
     </div>
