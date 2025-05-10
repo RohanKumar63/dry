@@ -1,49 +1,67 @@
 // src/components/admin/LoginForm.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
+import Link from 'next/link';
 
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const router = useRouter();
+
+  // Check authentication status on client side
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/admin/auth/check', {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          if (data.isAuthenticated) {
+            router.push('/admin/dashboard');
+          }
+        }
+      } catch (error) {
+        console.error('Auth check error:', error);
+      } finally {
+        setIsCheckingAuth(false);
+      }
+    };
+    
+    checkAuth();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(''); // Clear previous errors
+    setError('');
 
     try {
-      // Add timeout handling
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-      const response = await fetch('/api/admin/auth', {
+      // Simplified login request
+      const response = await fetch('/api/admin/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        signal: controller.signal
       });
-
-      clearTimeout(timeoutId);
-
-      // Handle non-JSON responses
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Server returned non-JSON response');
-      }
 
       const data = await response.json();
 
-      if (data.success) {
+      if (response.ok && data.success) {
         toast.success('Login successful');
-        // Redirect to admin dashboard
         router.push('/admin/dashboard');
       } else {
         setError(data.message || 'Login failed');
@@ -52,75 +70,91 @@ export default function LoginForm() {
     } catch (error) {
       console.error('Login error:', error);
       
-      // Handle specific error types
       if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          setError('Login request timed out. Please try again.');
-          toast.error('Login request timed out');
-        } else {
-          setError(error.message || 'An error occurred during login');
-          toast.error('An error occurred during login');
-        }
+        setError(error.message || 'An error occurred during login');
       } else {
         setError('An unexpected error occurred');
-        toast.error('An unexpected error occurred');
       }
+      toast.error('Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-700"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center mb-6 font-playfair text-emerald-800">
-        Admin Login
-      </h2>
-      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-        {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <span className="block sm:inline">{error}</span>
-          </div>
-        )}
-        <div className="mb-4">
-          <label
-            htmlFor="email"
-            className="block mb-2 text-sm font-medium text-gray-700"
-          >
-            Email
-          </label>
+    <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+      
+      <div className="rounded-md shadow-sm -space-y-px">
+        <div>
+          <label htmlFor="email-address" className="sr-only">Email address</label>
           <input
+            id="email-address"
+            name="email"
             type="email"
-            id="email"
+            autoComplete="email"
+            required
+            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
+            placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            required
+            disabled={loading}
           />
         </div>
-        <div className="mb-6">
-          <label
-            htmlFor="password"
-            className="block mb-2 text-sm font-medium text-gray-700"
-          >
-            Password
-          </label>
+        <div>
+          <label htmlFor="password" className="sr-only">Password</label>
           <input
-            type="password"
             id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 focus:z-10 sm:text-sm"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            required
+            disabled={loading}
           />
         </div>
+      </div>
+
+      <div>
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-50"
+          className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:bg-emerald-400"
         >
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? (
+            <span className="flex items-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Signing in...
+            </span>
+          ) : (
+            'Sign in'
+          )}
         </button>
-      </form>
-    </div>
+      </div>
+      
+      <div className="text-center">
+        <Link href="/" className="text-sm text-emerald-600 hover:text-emerald-500">
+          Return to homepage
+        </Link>
+      </div>
+    </form>
   );
 }

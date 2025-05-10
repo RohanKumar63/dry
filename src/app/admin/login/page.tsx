@@ -1,6 +1,4 @@
 // src/app/admin/login/page.tsx
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 import LoginForm from '@/components/admin/LoginForm';
 
 export const metadata = {
@@ -8,16 +6,8 @@ export const metadata = {
   description: 'Login to TheNutriDry admin dashboard',
 };
 
-export default async function AdminLoginPage() {
-  // Use cookies() with await
-  const cookieStore = await cookies();
-  const isLoggedIn = cookieStore.get('admin_session') !== undefined;
-  
-  // If already logged in, redirect to dashboard
-  if (isLoggedIn) {
-    redirect('/admin/dashboard');
-  }
-  
+// Remove server-side authentication check to prevent timeouts
+export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
