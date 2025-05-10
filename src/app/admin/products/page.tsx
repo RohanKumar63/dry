@@ -11,17 +11,19 @@ export default function ProductsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchProducts = async () => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const response = await fetch('/api/products');
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
       const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch products');
+      }
+      
       setProducts(data.products);
-    } catch (err) {
-      console.error('Error fetching products:', err);
-      setError('Failed to load products. Please try again.');
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setError(error instanceof Error ? error.message : 'Failed to fetch products');
     } finally {
       setIsLoading(false);
     }

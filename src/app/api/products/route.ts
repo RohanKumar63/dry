@@ -102,8 +102,17 @@ export async function GET(request: Request) {
       );
     }
 
+    // Handle Prisma errors
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      return NextResponse.json(
+        { error: `Database error: ${error.message}` },
+        { status: 500 }
+      );
+    }
+
+    // Handle other errors
     return NextResponse.json(
-      { error: 'Failed to fetch products' },
+      { error: error instanceof Error ? error.message : 'Failed to fetch products' },
       { status: 500 }
     );
   }
