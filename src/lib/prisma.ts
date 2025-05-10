@@ -1,10 +1,17 @@
-// src/lib/prisma.ts
+// Optimize Prisma client to prevent connection issues
 import { PrismaClient } from '@prisma/client';
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+// Add prisma to the NodeJS global type
+declare global {
+  var prisma: PrismaClient | undefined;
+}
 
-export const prisma = globalForPrisma.prisma || new PrismaClient();
+// Prevent multiple instances of Prisma Client in development
+const prisma = global.prisma || new PrismaClient({
+  log: ['error'],
+  errorFormat: 'minimal',
+});
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== 'production') global.prisma = prisma;
 
 export default prisma;

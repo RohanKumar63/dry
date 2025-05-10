@@ -17,6 +17,15 @@ const nextConfig = {
     // Will only be available on the server side
     timeoutSeconds: 60, // 60 seconds timeout
   },
+  // Add experimental features
+  experimental: {
+    // Enable streaming for improved performance
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+    // Optimize for serverless
+    optimizeServerReact: true,
+  },
 }
 
-module.exports = nextConfig 
+module.exports = nextConfig
