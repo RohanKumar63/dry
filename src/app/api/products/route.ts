@@ -34,12 +34,13 @@ export async function GET(request: Request) {
         }
       : baseWhere;
 
-    // Execute queries with timeout
+    // Extend timeout to 20 seconds
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Query timeout')), 8000); // 8 second timeout
+      setTimeout(() => reject(new Error('Query timeout')), 20000);
     });
 
-    const queryPromise = prisma.product.findMany({
+    // First get just the products without variants
+    const productsPromise = prisma.product.findMany({
       where: whereClause,
       select: {
         id: true,
@@ -53,34 +54,57 @@ export async function GET(request: Request) {
         featured: true,
         rating: true,
         reviews: true,
-        variants: {
-          select: {
-            id: true,
-            size: true,
-            price: true,
-            stock: true,
-          },
-        },
       },
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
     });
 
-    // Race between query and timeout
-    const products = await Promise.race([queryPromise, timeoutPromise]);
-
-    // Get total count only if we have results
-    let total = products.length;
-    if (products.length > 0) {
-      try {
-        total = await prisma.product.count({ where: whereClause });
-      } catch (error) {
-        console.error('Error getting total count:', error);
-        // If count fails, use the length of products as fallback
-        total = products.length;
-      }
+    // Race between product query and timeout
+    const productsWithoutVariants = await Promise.race([productsPromise, timeoutPromise]);
+    
+    // Only continue if we have products
+    if (productsWithoutVariants.length === 0) {
+      return NextResponse.json({
+        products: [],
+        pagination: {
+          total: 0,
+          pages: 0,
+          page,
+          limit,
+        },
+      });
     }
+
+    // Get variants in separate query
+    const productIds = productsWithoutVariants.map(p => p.id);
+    const variantsPromise = prisma.sizeVariant.findMany({
+      where: {
+        productId: { in: productIds }
+      },
+      select: {
+        id: true,
+        size: true,
+        price: true,
+        stock: true,
+        productId: true,
+      }
+    });
+
+    // Get total count in a separate query
+    const countPromise = prisma.product.count({ where: whereClause });
+    
+    // Execute both remaining queries in parallel with timeout
+    const [variants, total] = await Promise.race([
+      Promise.all([variantsPromise, countPromise]),
+      timeoutPromise
+    ]);
+
+    // Combine products with their variants
+    const products = productsWithoutVariants.map(product => ({
+      ...product,
+      variants: variants.filter(v => v.productId === product.id)
+    }));
 
     return NextResponse.json({
       products,
@@ -97,7 +121,7 @@ export async function GET(request: Request) {
     // Handle timeout specifically
     if (error instanceof Error && error.message === 'Query timeout') {
       return NextResponse.json(
-        { error: 'Request timed out. Please try again.' },
+        { error: 'Request timed out. The database is currently experiencing high load. Please try again.' },
         { status: 504 }
       );
     }

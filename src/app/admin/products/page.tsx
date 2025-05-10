@@ -9,29 +9,65 @@ export default function ProductsPage() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const fetchProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/products');
+      setError(null);
+      
+      // Add cache-busting parameter to prevent stale cache issues
+      const cacheBuster = new Date().getTime();
+      const response = await fetch(`/api/products?cacheBust=${cacheBuster}`, {
+        // Set longer timeout
+        signal: AbortSignal.timeout(30000)
+      });
+      
       const data = await response.json();
       
       if (!response.ok) {
         throw new Error(data.error || 'Failed to fetch products');
       }
       
-      setProducts(data.products);
+      setProducts(data.products || []);
     } catch (error) {
       console.error('Error fetching products:', error);
-      setError(error instanceof Error ? error.message : 'Failed to fetch products');
+      let errorMessage = 'Failed to fetch products';
+      
+      if (error instanceof Error) {
+        if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+          errorMessage = 'Request timed out. Please try again.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Auto-retry on timeout, with backoff
+  useEffect(() => {
+    if (error && error.includes('timed out') && retryCount < 2) {
+      const timer = setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        fetchProducts();
+      }, 3000 * (retryCount + 1)); // Exponential backoff
+      
+      return () => clearTimeout(timer);
+    }
+  }, [error, retryCount]);
+
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  const handleRetry = () => {
+    setRetryCount(0);
+    fetchProducts();
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -51,13 +87,17 @@ export default function ProductsPage() {
         <div className="bg-white shadow rounded-lg p-6">
           {isLoading ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">Loading products...</p>
+              <div className="flex flex-col items-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-500 mb-3"></div>
+                <p className="text-gray-500">Loading products...</p>
+                <p className="text-gray-400 text-sm mt-2">This may take a moment</p>
+              </div>
             </div>
           ) : error ? (
             <div className="text-center py-8">
               <p className="text-red-500">{error}</p>
               <button 
-                onClick={fetchProducts}
+                onClick={handleRetry}
                 className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
               >
                 Try Again
