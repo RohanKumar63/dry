@@ -4,6 +4,8 @@ import AdminHeader from '@/components/admin/AdminHeader';
 import Link from 'next/link';
 import DashboardStats from '@/components/admin/DashboardStats';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Admin Dashboard | TheNutriDry',
   description: 'TheNutriDry admin dashboard',

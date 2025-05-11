@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
-export const maxDuration = 300; // 5 minutes
+export const maxDuration = 60; // 60 seconds (Vercel hobby plan limit)
 
 export async function GET() {
   try {
