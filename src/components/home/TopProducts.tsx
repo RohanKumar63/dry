@@ -4,6 +4,13 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import ProductCard from '@/components/products/ProductCard'
 import { Product } from '@/types' // Import the Product type
+import useSWR from 'swr'
+
+// Define the fetcher function with proper typing
+const fetcher = (url: string) => fetch(url).then(res => {
+  if (!res.ok) throw new Error('Failed to fetch')
+  return res.json()
+})
 
 export default function TopProductsSlider() {
   const [activeCategory, setActiveCategory] = useState('All')
@@ -13,74 +20,60 @@ export default function TopProductsSlider() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [showLeftButton, setShowLeftButton] = useState(false)
   const [showRightButton, setShowRightButton] = useState(true)
-  const [products, setProducts] = useState<Product[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [retryCount, setRetryCount] = useState(0)
   
-  // Fetch bestseller products from API
-  useEffect(() => {
-    const fetchBestsellers = async () => {
-      if (retryCount > 2) {
-        // Fall back to static data after 3 retries
-        setProducts(getFallbackProducts());
-        setIsLoading(false);
-        return;
+  // Fallback products in case of API failure
+  const getFallbackProducts = (): Product[] => {
+    return [
+      {
+        id: '1',
+        name: 'Dried Amla',
+        description: 'Premium quality dried amla with natural goodness.',
+        price: 12.99,
+        image: '/products/1.jpg',
+        category: 'Fruits',
+        rating: 4.5,
+        reviews: 24,
+        bestseller: true,
+        stock: 15
+      },
+      {
+        id: '2',
+        name: 'Organic Wheatgrass',
+        description: 'Pure organic wheatgrass packed with nutrients.',
+        price: 14.99,
+        image: '/products/2.jpg',
+        category: 'Superfoods',
+        rating: 4.8,
+        reviews: 32,
+        bestseller: true,
+        stock: 20
+      },
+      {
+        id: '3',
+        name: 'Dehydrated Red Onion Flakes',
+        description: 'Conveniently sliced and dehydrated red onion flakes.',
+        price: 9.49,
+        image: '/products/3.jpg',
+        category: 'Vegetables',
+        rating: 4.2,
+        reviews: 18,
+        bestseller: true,
+        stock: 25
       }
-      
-      setIsLoading(true);
-      try {
-        // Add cache busting to prevent stale responses
-        const cacheBuster = new Date().getTime();
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // Increase to 15-second timeout
-        
-        const response = await fetch(`/api/products?bestseller=true&limit=8&cacheBust=${cacheBuster}`, {
-          signal: controller.signal,
-          // Add cache control headers
-          headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch bestseller products: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        if (data.products && data.products.length > 0) {
-          setProducts(data.products);
-          setError(null);
-        } else {
-          // If no products returned, use fallback data
-          setProducts(getFallbackProducts());
-        }
-      } catch (err) {
-        console.error('Error fetching bestseller products:', err);
-        
-        // Check specifically for timeout/abort errors
-        if (err instanceof Error) {
-          if (err.name === 'AbortError') {
-            setError('Request timed out. Loading limited product selection.');
-            setRetryCount(prev => prev + 1);
-            
-            // After first timeout, use fallback data but keep trying in background
-            setProducts(getFallbackProducts());
-          } else {
-            setError('Failed to load bestseller products');
-          }
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchBestsellers();
-  }, [retryCount]);
+    ];
+  };
+  
+  // Use SWR for data fetching with caching
+  const { data, error: swrError, isLoading } = useSWR<{products: Product[]}>('/api/products?bestseller=true&limit=8', fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    dedupingInterval: 120000, // 2 minutes
+    fallbackData: { products: getFallbackProducts() } // Your fallback data
+  })
+  
+  // Use the data directly
+  const products = data?.products || []
+  const error = swrError ? swrError.message : null
   
   const categories = ['All', ...new Set(products.map(product => product.category))];
   
@@ -147,48 +140,6 @@ export default function TopProductsSlider() {
     }
   }
   
-  // Fallback products in case of API failure
-  const getFallbackProducts = (): Product[] => {
-    return [
-      {
-        id: '1',
-        name: 'Dried Amla',
-        description: 'Premium quality dried amla with natural goodness.',
-        price: 12.99,
-        image: '/products/1.jpg',
-        category: 'Fruits',
-        rating: 4.5,
-        reviews: 24,
-        bestseller: true,
-        stock: 15
-      },
-      {
-        id: '2',
-        name: 'Organic Wheatgrass',
-        description: 'Pure organic wheatgrass packed with nutrients.',
-        price: 14.99,
-        image: '/products/2.jpg',
-        category: 'Superfoods',
-        rating: 4.8,
-        reviews: 32,
-        bestseller: true,
-        stock: 20
-      },
-      {
-        id: '3',
-        name: 'Dehydrated Red Onion Flakes',
-        description: 'Conveniently sliced and dehydrated red onion flakes.',
-        price: 9.49,
-        image: '/products/3.jpg',
-        category: 'Vegetables',
-        rating: 4.2,
-        reviews: 18,
-        bestseller: true,
-        stock: 25
-      }
-    ];
-  };
-  
   if (isLoading) {
     return (
       <section className="py-16 bg-white">
@@ -214,7 +165,7 @@ export default function TopProductsSlider() {
           </p>
           <p className="text-red-500 mb-4">{error}</p>
           <button 
-            onClick={() => setRetryCount(prev => prev + 1)} 
+            onClick={() => window.location.reload()} 
             className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700 transition-colors"
           >
             Try Again
@@ -278,7 +229,7 @@ export default function TopProductsSlider() {
           {showLeftButton && (
             <button
               onClick={scrollLeft}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-amber-600 border border-gray-200 -ml-5 focus:outline-none focus:ring-2 focus:ring-amber-500 hidden md:flex"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-md md:flex items-center justify-center text-gray-600 hover:text-amber-600 border border-gray-200 -ml-5 focus:outline-none focus:ring-2 focus:ring-amber-500 hidden"
               aria-label="Scroll left"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -305,7 +256,7 @@ export default function TopProductsSlider() {
           {showRightButton && (
             <button
               onClick={scrollRight}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-amber-600 border border-gray-200 -mr-5 focus:outline-none focus:ring-2 focus:ring-amber-500 hidden md:flex"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white w-10 h-10 rounded-full shadow-md md:flex items-center justify-center text-gray-600 hover:text-amber-600 border border-gray-200 -mr-5 focus:outline-none focus:ring-2 focus:ring-amber-500 hidden"
               aria-label="Scroll right"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

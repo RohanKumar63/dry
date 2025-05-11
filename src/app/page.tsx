@@ -1,10 +1,10 @@
-'use client'
 import HeroSection from '@/components/home/HeroSection'
 import TopProducts from '@/components/home/TopProducts'
 import NewProducts from '@/components/home/NewProducts'
 import CertificationSlider from '@/components/CertificationSlider'
 import Image from 'next/image'
 import Link from 'next/link'
+import { NewsletterForm } from '@/components/home/ClientComponents'
 
 export default function Home() {
   return (
@@ -97,25 +97,7 @@ export default function Home() {
           <p className="max-w-2xl mx-auto mb-8">
             Subscribe to our newsletter for exclusive offers, new product announcements, and lifestyle inspiration.
           </p>
-          <form className="max-w-md mx-auto">
-            <div className="flex rounded-full overflow-hidden border-2 border-white shadow-lg">
-              <input 
-                type="email" 
-                placeholder="Your email address" 
-                className="flex-grow px-6 py-3 text-gray-900 focus:outline-none w-full"
-                required
-              />
-              <button 
-                type="submit" 
-                className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white transition-colors font-medium whitespace-nowrap"
-              >
-                Subscribe
-              </button>
-            </div>
-            <p className="text-xs mt-3 text-white/80">
-              By subscribing, you agree to receive marketing communications from us.
-            </p>
-          </form>
+          <NewsletterForm />
         </div>
       </section>
     </div>
@@ -147,3 +129,6 @@ function CategoryCard({ title, image, href }: { title: string, image: string, hr
     </Link>
   )
 }
+
+
+

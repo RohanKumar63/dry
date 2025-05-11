@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
+// Add cache duration constant
+const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes in milliseconds
+
 // In the GET function, add search query parameter handling
 export async function GET(request: Request) {
   try {
@@ -13,128 +16,114 @@ export async function GET(request: Request) {
     const searchQuery = searchParams.get('q');
     const limit = parseInt(searchParams.get('limit') || '20');
     const page = parseInt(searchParams.get('page') || '1');
-    const skip = (page - 1) * limit;
+    
+    // Check if we can use cached data
+    const now = Date.now();
+    
+    // Return cached bestsellers
+    if (bestseller && !category && !searchQuery) {
+      if (global.productCache?.bestsellers.data && 
+          (now - global.productCache.bestsellers.timestamp) < CACHE_DURATION) {
+        console.log('Returning cached bestsellers');
+        return NextResponse.json(global.productCache.bestsellers.data);
+      }
+    }
+    
+    // Return cached featured products
+    if (featured && !category && !searchQuery) {
+      if (global.productCache?.featured.data && 
+          (now - global.productCache.featured.timestamp) < CACHE_DURATION) {
+        console.log('Returning cached featured products');
+        return NextResponse.json(global.productCache.featured.data);
+      }
+    }
+    
+    // Return cached category products
+    if (category && !bestseller && !featured && !searchQuery) {
+      const cacheKey = `category_${category}`;
+      if (global.productCache?.categories[cacheKey] && 
+          (now - global.productCache.categories[cacheKey].timestamp) < CACHE_DURATION) {
+        console.log(`Returning cached ${category} products`);
+        return NextResponse.json(global.productCache.categories[cacheKey].data);
+      }
+    }
 
-    // Build base where clause
-    const baseWhere: Prisma.ProductWhereInput = {
+    // Build optimized query
+    const skip = (page - 1) * limit;
+    const whereClause = {
       ...(category ? { category } : {}),
       ...(bestseller ? { bestseller: true } : {}),
       ...(featured ? { featured: true } : {}),
+      ...(searchQuery ? {
+        OR: [
+          { name: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+          { category: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+          { description: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+        ]
+      } : {})
     };
 
-    // Add search condition if query exists
-    const whereClause: Prisma.ProductWhereInput = searchQuery
-      ? {
-          ...baseWhere,
-          OR: [
-            { name: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
-            { category: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
-            { description: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
-          ],
-        }
-      : baseWhere;
-
-    // Extend timeout to 30 seconds
-    const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error('Query timeout')), 30000);
-    });
-
-    // First get just the products without variants
-    const productsPromise = prisma.product.findMany({
-      where: whereClause,
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        price: true,
-        salePrice: true,
-        image: true,
-        category: true,
-        bestseller: true,
-        featured: true,
-        rating: true,
-        reviews: true,
-      },
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    });
-
-    // Race between product query and timeout
-    const productsWithoutVariants = await Promise.race([productsPromise, timeoutPromise]);
-    
-    // Only continue if we have products
-    if (productsWithoutVariants.length === 0) {
-      return NextResponse.json({
-        products: [],
-        pagination: {
-          total: 0,
-          pages: 0,
-          page,
-          limit,
+    // Execute optimized query with Promise.all for parallel execution
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where: whereClause,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          price: true,
+          salePrice: true,
+          image: true,
+          category: true,
+          bestseller: true,
+          featured: true,
+          rating: true,
+          reviews: true,
+          stock: true,
+          // Only fetch variants if needed
+          variants: {
+            select: {
+              id: true,
+              size: true,
+              price: true,
+              stock: true,
+            }
+          }
         },
-      });
-    }
-
-    // Get variants in separate query
-    const productIds = productsWithoutVariants.map(p => p.id);
-    const variantsPromise = prisma.sizeVariant.findMany({
-      where: {
-        productId: { in: productIds }
-      },
-      select: {
-        id: true,
-        size: true,
-        price: true,
-        stock: true,
-        productId: true,
-      }
-    });
-
-    // Get total count in a separate query
-    const countPromise = prisma.product.count({ where: whereClause });
-    
-    // Execute both remaining queries in parallel with timeout
-    const [variants, total] = await Promise.race([
-      Promise.all([variantsPromise, countPromise]),
-      timeoutPromise
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.product.count({ where: whereClause })
     ]);
-
-    // Combine products with their variants
-    const products = productsWithoutVariants.map(product => ({
-      ...product,
-      variants: variants.filter(v => v.productId === product.id)
-    }));
-
-    return NextResponse.json({
+    
+    const result = {
       products,
       pagination: {
         total,
         pages: Math.ceil(total / limit),
         page,
         limit,
-      },
-    });
+      }
+    };
+    
+    // Cache the results
+    if (bestseller && !category && !searchQuery && global.productCache) {
+      global.productCache.bestsellers = { data: result, timestamp: now };
+    }
+    
+    if (featured && !category && !searchQuery && global.productCache) {
+      global.productCache.featured = { data: result, timestamp: now };
+    }
+    
+    if (category && !bestseller && !featured && !searchQuery && global.productCache) {
+      const cacheKey = `category_${category}`;
+      global.productCache.categories[cacheKey] = { data: result, timestamp: now };
+    }
+    
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Error fetching products:', error);
-    
-    // Handle timeout specifically
-    if (error instanceof Error && error.message === 'Query timeout') {
-      return NextResponse.json(
-        { error: 'Request timed out. The database is currently experiencing high load. Please try again.' },
-        { status: 504 }
-      );
-    }
-
-    // Handle Prisma errors
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      return NextResponse.json(
-        { error: `Database error: ${error.message}` },
-        { status: 500 }
-      );
-    }
-
-    // Handle other errors
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch products' },
       { status: 500 }

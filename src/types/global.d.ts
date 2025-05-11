@@ -13,8 +13,16 @@ declare global {
     lastUpdated: string;
   }
   
+  // Product cache interface
+  interface ProductCache {
+    bestsellers: { data: any; timestamp: number };
+    featured: { data: any; timestamp: number };
+    categories: Record<string, { data: any; timestamp: number }>;
+  }
+  
   // Add to the global namespace
   var dashboardStats: DashboardStats | undefined;
+  var productCache: ProductCache | undefined;
 }
 
 // This export is needed to make this a module
