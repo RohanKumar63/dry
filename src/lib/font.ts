@@ -1,20 +1,11 @@
-// lib/fonts.ts
-import localFont from 'next/font/local';
+// lib/font.ts
+import { Inter } from 'next/font/google';
 
-export const customFont = localFont({
-  src: [
-    {
-      path: '../public/fonts/CustomFont-Regular.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../public/fonts/CustomFont-Bold.woff2',
-      weight: '700',
-      style: 'normal',
-    },
-  ],
+// Replace the local font with Google Fonts
+export const customFont = Inter({
+  subsets: ['latin'],
   display: 'swap',
+  weight: ['400', '700'],
 });
 
 export const defaultFont = customFont;

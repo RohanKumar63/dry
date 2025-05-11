@@ -1,4 +1,5 @@
 import React from 'react';
+import { defaultFont } from '@/lib/font';
 
 export const metadata = {
   title: 'Terms of Service | TheNutriDry',
@@ -7,12 +8,12 @@ export const metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <div className="pt-24 pb-16 bg-neutral-50">
+    <div className={`pt-24 pb-16 bg-neutral-50 ${defaultFont.className}`}>
       <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6 md:p-8">
+        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-sm p-6 md:p-8 terms-page">
           <h1 className="text-3xl md:text-4xl font-playfair mb-6 text-gray-900">Terms of service</h1>
           
-          <div className="prose prose-green max-w-none">
+          <div className="prose prose-green max-w-none prose-headings:font-playfair prose-p:text-gray-700 prose-p:leading-relaxed">
             <p>The use of any product, service, or feature (the Materials) available through the internet website accessible at the website (www.theNutriDry.com) by any user of the Website (You or Your hereafter) shall be governed by the following terms of use</p>
             
             <p>This website is supplied and owned by AL AHAD TRADING COMPANY on behalf of ourselves and our affiliate partners (TheNutriDry, &quot;we&quot;, &quot;our&quot; or &quot;us&quot;).</p>
